@@ -45,6 +45,17 @@ proc generateClusterCartesianCoordinates (
   writeClusterXYZ( numberOfAtoms, clusterIndex, numberOfAtomTypes, numberOfEachAtomType,
     atomTypes, cartesianCoordinates);
 
+  for i in 1..numberOfAtoms-1 {
+    for j in i+1..numberOfAtoms {
+      writeln("checking atom ",i," and atom ",j," for closeness");
+      writeln(cartesianCoordinates[i,1..3]);
+      writeln(cartesianCoordinates[j,1..3]);
+      writeln(distance(cartesianCoordinates[i,1..3],cartesianCoordinates[j,1..3]));
+      if (distance(cartesianCoordinates[i,1..3],cartesianCoordinates[j,1..3]) < 0.5) {
+        writeln("atom ",i," and atom ",j," are too close");
+      }
+    }
+  }
 }
 
 proc writeClusterXYZ(
@@ -65,4 +76,11 @@ proc writeClusterXYZ(
     }
   }
 
+}
+
+proc distance(x1: [1..3] real, x2: [1..3] real): real{
+  return sqrt(
+     (x1[1]-x2[1])*(x1[1]-x2[1])
+    +(x1[2]-x2[2])*(x1[2]-x2[2])
+    +(x1[3]-x2[3])*(x1[3]-x2[3]));
 }
