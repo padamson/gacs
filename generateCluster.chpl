@@ -6,17 +6,23 @@ var atomTypes:[1..numberOfAtomTypes] string = ["U","O"];
 var clusterIndex:int = 1;
 //var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real = {{0.3,0.3},{0.3,0.3}};
 
+var clusterFilename: string = "cluster_" + clusterIndex + ".xyz";
+var clusterFile = file.open(clusterFilename);
+var writer = clusterFile.writer();
+
 generateClusterCartesianCoordinates (
     numberOfAtomTypes,
     numberOfEachAtomType,
     atomTypes,
-    clusterIndex);
+    clusterIndex,
+    writer);
 
 proc generateClusterCartesianCoordinates (
     numberOfAtomTypes: int, 
     numberOfEachAtomType: [] int,
     atomTypes:[] string,
-    clusterIndex: int) {
+    clusterIndex: int,
+    writer: channel) {
 
   var numberOfAtoms: int = 0;
   for i in 1..numberOfAtomTypes {
@@ -43,7 +49,7 @@ proc generateClusterCartesianCoordinates (
   writeln("atomTypeArray=",atomTypeArray);
 
   writeClusterXYZ( numberOfAtoms, clusterIndex, numberOfAtomTypes, numberOfEachAtomType,
-    atomTypes, cartesianCoordinates);
+    atomTypes, cartesianCoordinates, writer);
 
   for i in 1..numberOfAtoms-1 {
     for j in i+1..numberOfAtoms {
@@ -64,10 +70,13 @@ proc writeClusterXYZ(
     numberOfAtomTypes:int,
     numberOfEachAtomType:[] int,
     atomTypes:[] string,
-    cartesianCoordinates: [] real) {
+    cartesianCoordinates: [] real,
+    writer: channel) {
 
   writeln(numberOfAtoms); 
+  writer.writeln(numberOfAtoms);
   writeln(clusterIndex);
+  writer.writeln(clusterIndex);
   var ij:int = 0;
   for i in 1..numberOfAtomTypes {
     for j in 1..numberOfEachAtomType[i] {
