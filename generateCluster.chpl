@@ -7,7 +7,8 @@ var clusterIndex:int = 1;
 //var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real = {{0.3,0.3},{0.3,0.3}};
 
 var clusterFilename: string = "cluster_" + clusterIndex + ".xyz";
-var clusterFile = file.open(clusterFilename);
+writeln("clusterFilename: ",clusterFilename);
+var clusterFile = open(clusterFilename,iomode.cw);
 var writer = clusterFile.writer();
 
 generateClusterCartesianCoordinates (
@@ -74,7 +75,7 @@ proc writeClusterXYZ(
     writer: channel) {
 
   writeln(numberOfAtoms); 
-  writer.writeln(numberOfAtoms);
+  writer.write(numberOfAtoms);
   writeln(clusterIndex);
   writer.writeln(clusterIndex);
   var ij:int = 0;
