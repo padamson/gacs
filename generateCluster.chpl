@@ -20,9 +20,9 @@ for clusterIndex in 1..numberOfClusters {
       clusterIndex,
       writer);
 
-  //TODO: figure out why following close command causes empty files
-  //clusterFile.fsync();
-  //clusterFile.close();
+  writer.flush();
+  writer.close();
+  clusterFile.close();
 }
 
 proc generateClusterCartesianCoordinates (
@@ -95,9 +95,9 @@ proc writeClusterXYZ(
     writer: channel) {
 
   //writeln(numberOfAtoms); 
-  writer.writeln(numberOfAtoms);
+  //writer.writeln(numberOfAtoms);
   //writeln(clusterIndex);
-  writer.writeln(clusterIndex);
+  //writer.writeln(clusterIndex);
   var ij:int = 0;
   for i in 1..numberOfAtomTypes {
     for j in 1..numberOfEachAtomType[i] {

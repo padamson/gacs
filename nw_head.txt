@@ -1,0 +1,10 @@
+title "Simulated Annealing"
+echo
+
+start U3O8
+
+charge 0
+
+#### kicked structure ####
+geometry
+
