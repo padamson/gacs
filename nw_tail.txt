@@ -61,19 +61,24 @@ end
 set cpmd:init_velocities_temperature 2000.0
 task pspw car-parrinello
 
+charge 2
+
 dft
   XC b3lyp
   iterations 100
 end
 
-basis "ao basis" spherical 
-  Si library "cc-pVDZ"
-  C library "cc-pVDZ"
-END
+basis
+  U library crenbl_ecp
+  O library aug-cc-pvdz
+end
+
+ecp
+  U library crenbl_ecp
+end
 
 driver
  MAXITER 50
 end
 
 task dft optimize ignore #final optimization
-

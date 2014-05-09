@@ -6,5 +6,4 @@ start U3O8
 charge 0
 
 #### kicked structure ####
-geometry
-
+geometry noautoz noautosym units angstrom

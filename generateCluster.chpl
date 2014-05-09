@@ -4,8 +4,9 @@ var numberOfAtomTypes:int = 2;
 var numberOfEachAtomType:[1..numberOfAtomTypes] int = [3,8];
 var atomTypes:[1..numberOfAtomTypes] string = ["U","O"];
 var numberOfClusters:int = 5;
-//var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real = {{0.3,0.3},{0.3,0.3}};
+//var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real;
 var clusterFilename: string;
+var minBond: real = 1.0;
 
 for clusterIndex in 1..numberOfClusters {
   clusterFilename = "cluster_" + clusterIndex + ".xyz";
@@ -60,7 +61,7 @@ proc generateClusterCartesianCoordinates (
   var i: int = 1;
   label distanceCheckLoop while (i < numberOfAtoms) do {
     for j in i+1..numberOfAtoms {
-      if (distance(cartesianCoordinates[i,1..3],cartesianCoordinates[j,1..3]) < 0.5) {
+      if (distance(cartesianCoordinates[i,1..3],cartesianCoordinates[j,1..3]) < minBond) {
         writeln("atom ",i," and atom ",j," are too close");
         writeln("atom ",i," coords: ",cartesianCoordinates[i,1..3]);
         writeln("atom ",j," coords: ",cartesianCoordinates[j,1..3]);
@@ -95,9 +96,9 @@ proc writeClusterXYZ(
     writer: channel) {
 
   //writeln(numberOfAtoms); 
-  //writer.writeln(numberOfAtoms);
+  writer.writeln(numberOfAtoms);
   //writeln(clusterIndex);
-  //writer.writeln(clusterIndex);
+  writer.writeln(clusterIndex);
   var ij:int = 0;
   for i in 1..numberOfAtomTypes {
     for j in 1..numberOfEachAtomType[i] {
