@@ -9,8 +9,8 @@ nwpw
   lmbfgs
 end
 driver
-  maxiter 50
-  xyz u3o8
+  maxiter 100
+  xyz u2o5
 end
 task pspw optimize
 

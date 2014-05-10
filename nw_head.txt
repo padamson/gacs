@@ -1,7 +1,7 @@
 title "Optimization with LDA Approximation"
 echo
 
-start U3O8
+start u2o5
 
 charge 1
 
