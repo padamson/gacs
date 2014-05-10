@@ -1,0 +1,104 @@
+title "Simulated Annealing"
+echo
+
+start U3O8
+
+charge 0
+
+#### kicked structure ####
+geometry noautoz noautosym units angstrom
+U -0.95318 -0.83539 -2.11329
+U 0.372114 -1.69116 -1.70317
+U -0.901591 -1.84246 -1.1063
+O -0.589911 -1.31652 0.846628
+O -1.56856 0.696673 0.0290416
+O -1.84394 -2.00105 0.551636
+O -0.513214 1.97172 1.51691
+O -0.43019 -1.22574 -0.40661
+O -1.98778 -0.896274 0.358413
+O 1.56121 0.583907 -0.0610886
+O 0.773509 2.08913 -0.308062
+end
+
+nwpw
+  simulation_cell
+    boundary_conditions aperiodic
+    SC 30.0
+  end
+  cutoff 12.0
+  lmbfgs
+  Car-Parrinello
+    Nose-Hoover 250.0 1500.0 250.0 1500.0 #Tion=Telc=1500K, relaxation periods=250au
+    fake_mass 500.0
+    time_step 5.0
+    loop 10 300
+    scaling 1.0 1.0
+    xyz_filename     sa_en.xyz
+  end
+end
+task pspw energy
+#Freeze C group
+#set geometry:actlist 1:12
+set cpmd:init_velocities_temperature 1500.0
+task pspw car-parrinello
+
+#Release C group,md at low temp to reserve C6 structure
+#unset geometry:actlist
+#set cpmd:init_velocities_temperature 1500.0
+#task pspw car-parrinello
+unset cpmd:init_velocities_temperature
+
+nwpw
+  simulation_cell
+    boundary_conditions aperiodic
+    SC 30.0
+  end
+  cutoff 12.0
+  lmbfgs
+  Car-Parrinello
+    Nose-Hoover 250.0 2000.0 250.0 2000.0 #Tion=Telc=2000K, relaxation periods=250au
+    fake_mass 500.0
+    time_step 5.0
+    loop 10 300
+    scaling 1.0 1.0
+    xyz_filename     sa_en.xyz
+  end
+end
+task pspw energy
+set cpmd:init_velocities_temperature 2000.0
+task pspw car-parrinello
+unset cpmd:init_velocities_temperature
+
+nwpw
+  Car-Parrinello
+    SA_decay 4.134d4 4.134d4              #decay rate in units of au (1au=4.1889e-17seconds)
+    Nose-Hoover 250.0 2000.0 250.0 2000.0 #Tion=Telc=2000K, relaxation periods=250au
+    loop 100 200
+    xyz_filename     sa_cp.xyz
+  end
+end
+
+set cpmd:init_velocities_temperature 2000.0
+task pspw car-parrinello
+
+charge 2
+
+dft
+  XC b3lyp
+  iterations 100
+end
+
+basis
+  U library crenbl_ecp
+  O library aug-cc-pvdz
+end
+
+ecp
+  U library crenbl_ecp
+end
+
+driver
+ MAXITER 50
+end
+
+task dft optimize ignore #final optimization
