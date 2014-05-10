@@ -1,7 +1,7 @@
 use Random;
 
 var numberOfAtomTypes:int = 2;
-var numberOfEachAtomType:[1..numberOfAtomTypes] int = [3,8];
+var numberOfEachAtomType:[1..numberOfAtomTypes] int = [2,5];
 var atomTypes:[1..numberOfAtomTypes] string = ["U","O"];
 var numberOfClusters:int = 5;
 //var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real;

@@ -2,83 +2,15 @@ end
 
 nwpw
   simulation_cell
-    boundary_conditions aperiodic
-    SC 30.0
+    SC 20.0 
   end
-  cutoff 12.0
+  cutoff 15.0
+  xc lda
   lmbfgs
-  Car-Parrinello
-    Nose-Hoover 250.0 1500.0 250.0 1500.0 #Tion=Telc=1500K, relaxation periods=250au
-    fake_mass 500.0
-    time_step 5.0
-    loop 10 300
-    scaling 1.0 1.0
-    xyz_filename     sa_en.xyz
-  end
 end
-task pspw energy
-#Freeze C group
-#set geometry:actlist 1:12
-set cpmd:init_velocities_temperature 1500.0
-task pspw car-parrinello
-
-#Release C group,md at low temp to reserve C6 structure
-#unset geometry:actlist
-#set cpmd:init_velocities_temperature 1500.0
-#task pspw car-parrinello
-unset cpmd:init_velocities_temperature
-
-nwpw
-  simulation_cell
-    boundary_conditions aperiodic
-    SC 30.0
-  end
-  cutoff 12.0
-  lmbfgs
-  Car-Parrinello
-    Nose-Hoover 250.0 2000.0 250.0 2000.0 #Tion=Telc=2000K, relaxation periods=250au
-    fake_mass 500.0
-    time_step 5.0
-    loop 10 300
-    scaling 1.0 1.0
-    xyz_filename     sa_en.xyz
-  end
-end
-task pspw energy
-set cpmd:init_velocities_temperature 2000.0
-task pspw car-parrinello
-unset cpmd:init_velocities_temperature
-
-nwpw
-  Car-Parrinello
-    SA_decay 4.134d4 4.134d4              #decay rate in units of au (1au=4.1889e-17seconds)
-    Nose-Hoover 250.0 2000.0 250.0 2000.0 #Tion=Telc=2000K, relaxation periods=250au
-    loop 100 200
-    xyz_filename     sa_cp.xyz
-  end
-end
-
-set cpmd:init_velocities_temperature 2000.0
-task pspw car-parrinello
-
-charge 2
-
-dft
-  XC b3lyp
-  iterations 100
-end
-
-basis
-  U library crenbl_ecp
-  O library aug-cc-pvdz
-end
-
-ecp
-  U library crenbl_ecp
-end
-
 driver
- MAXITER 50
+  maxiter 50
+  xyz u3o8
 end
+task pspw optimize
 
-task dft optimize ignore #final optimization

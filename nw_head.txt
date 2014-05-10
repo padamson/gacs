@@ -1,9 +1,9 @@
-title "Simulated Annealing"
+title "Optimization with LDA Approximation"
 echo
 
 start U3O8
 
-charge 0
+charge 1
 
-#### kicked structure ####
-geometry noautoz noautosym units angstrom
+#### random structure ####
+geometry units angstrom

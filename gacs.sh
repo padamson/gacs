@@ -3,8 +3,11 @@ datadir=~/Research/data
 
 generateCluster
 
-tail -n +3 cluster_1.xyz > cluster_1.$$
-cat nw_head.txt cluster_1.$$ nw_tail.txt > cluster_1.nw
+for i in {1..5}
+do
+  tail -n +3 cluster_$i.xyz > cluster_$i.$$
+  cat nw_head.txt cluster_$i.$$ nw_tail.txt > cluster_$i.nw
+done
 
 #babel -ixyz $datadir/cluster_1.xyz -ogamin $datadir/cluster_1.inp
 
