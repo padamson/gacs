@@ -1,35 +1,77 @@
 use Random;
+use Help;
 
 var numberOfAtomTypes:int = 2;
-var numberOfEachAtomType:[1..numberOfAtomTypes] int = [2,5];
-var atomTypes:[1..numberOfAtomTypes] string = ["U","O"];
+var numberOfEachAtomType:[1..2] int = [2,5];
+var atomTypes:[1..2] string = ["U","O"];
 var numberOfClusters:int = 5;
 //var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real;
-var clusterFilename: string;
 var minBond: real = 1.0;
 
-for clusterIndex in 1..numberOfClusters {
-  clusterFilename = "cluster_" + clusterIndex + ".xyz";
-  writeln("Writing cluster to file: ",clusterFilename);
-  var clusterFile = open(clusterFilename,iomode.cw);
-  var writer = clusterFile.writer();
+proc main(args: [] string){
+  for a in args {
+    if a=="--help" {
+      printUsage();
+      writeln("\nEXTRA ARGUMENTS:");
+      writeln(  "================");
+      writeln("placeholder");
+      exit(0);
+    }
+  }
+  var clusterFilename: string;
 
-  generateClusterCartesianCoordinates (
-      numberOfAtomTypes,
-      numberOfEachAtomType,
-      atomTypes,
-      clusterIndex,
-      writer);
+  var inputFile = open("cluster.in",iomode.r);
+  var reader = inputFile.reader();
+  var inputLineA, inputLineB: string;
+  var numberOfEachAtomTypeCounter,atomTypesCounter:int = 1;
 
-  writer.flush();
-  writer.close();
-  clusterFile.close();
+  var numberOfInputLines: int = reader.read(int);
+
+  for i in 1..numberOfInputLines {
+    inputLineA = reader.read(string);
+    inputLineB = reader.read(string);
+    select inputLineA {
+      when "minBond" do minBond=inputLineB:real;
+      when "numberOfAtomTypes" do numberOfAtomTypes=inputLineB:int;
+      when "numberOfEachAtomType" do {
+        numberOfEachAtomType[numberOfEachAtomTypeCounter]=inputLineB:int;
+        numberOfEachAtomTypeCounter += 1;
+      }
+      when "atomTypes" do {
+        atomTypes[atomTypesCounter] = inputLineB;
+        atomTypesCounter += 1;
+      }
+      when "numberOfClusters" do numberOfClusters = inputLineB:int;
+      otherwise writeln("input keyword not recognized");
+    }
+  }
+
+  for clusterIndex in 1..numberOfClusters {
+    clusterFilename = "cluster_" + clusterIndex + ".xyz";
+    writeln("Writing cluster to file: ",clusterFilename);
+    var clusterFile = open(clusterFilename,iomode.cw);
+    var writer = clusterFile.writer();
+
+    generateClusterCartesianCoordinates(
+        numberOfAtomTypes,
+        numberOfEachAtomType,
+        atomTypes,
+        minBond,
+        clusterIndex,
+        writer);
+
+    writer.flush();
+    writer.close();
+    clusterFile.close();
+  }
+
 }
 
 proc generateClusterCartesianCoordinates (
     numberOfAtomTypes: int, 
     numberOfEachAtomType: [] int,
     atomTypes:[] string,
+    minBond: real,
     clusterIndex: int,
     writer: channel) {
 
