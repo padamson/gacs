@@ -1,7 +1,7 @@
 6
 numberOfClusters 10
-numberOfEachAtomType 5
 numberOfEachAtomType 2
-atomTypes "U"
-atomTypes "O"
+numberOfEachAtomType 5
+atomTypes U
+atomTypes O
 minBond 1.0
