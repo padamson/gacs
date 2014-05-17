@@ -7,18 +7,26 @@ var atomTypes:[1..2] string = ["U","O"];
 var numberOfClusters:int = 5;
 //var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real;
 var minBond: real = 1.0;
+var inputFilename: string;
+var clusterFilename: string;
 
 proc main(args: [] string){
-  for a in args {
-    if a=="--help" {
+  var skipArg:bool = false;
+  for i in args.domain {
+    if args[i]=="--help" {
       printUsage();
       writeln("\nEXTRA ARGUMENTS:");
       writeln(  "================");
-      writeln("placeholder");
+      writeln("-i <inputFilename>");
       exit(0);
+    } else if (!skipArg && args[i]=="-i") {
+      inputFilename = args[i+1];
+      writeln("inputFilename: ",inputFilename);
+      skipArg = true;
+    } else if (skipArg) {
+      skipArg = false;
     }
   }
-  var clusterFilename: string;
 
   var inputFile = open("cluster.in",iomode.r);
   var reader = inputFile.reader();

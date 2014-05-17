@@ -10,7 +10,7 @@ nwpw
 end
 driver
   maxiter 100
-  xyz u2o5
+  xyz u3o6
 end
 task pspw optimize
 
