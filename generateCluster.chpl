@@ -18,8 +18,8 @@ proc main(args: [] string){
   var inputFile = open(inputFilename,iomode.r);
   var reader = inputFile.reader();
   var inputLineA, inputLineB: string;
-  var numberOfEachAtomTypeCounter,atomTypesCounter:int = 1;
-
+  var numberOfEachAtomTypeCounter,atomTypesCounter:int = 0;
+  
   var numberOfInputLines: int = reader.read(int);
 
   for i in 1..numberOfInputLines {
@@ -27,18 +27,30 @@ proc main(args: [] string){
     inputLineB = reader.read(string);
     select inputLineA {
       when "minBond" do minBond=inputLineB:real;
-      when "numberOfAtomTypes" do numberOfAtomTypes=inputLineB:int;
+      when "numberOfAtomTypes" do {
+        numberOfAtomTypes=inputLineB:int;
+        numberOfEachAtomType.domain = {1..numberOfAtomTypes};
+        atomTypes.domain = {1..numberOfAtomTypes};
+      }
       when "numberOfEachAtomType" do {
-        numberOfEachAtomType[numberOfEachAtomTypeCounter]=inputLineB:int;
         numberOfEachAtomTypeCounter += 1;
+        numberOfEachAtomType[numberOfEachAtomTypeCounter]=inputLineB:int;
       }
       when "atomTypes" do {
-        atomTypes[atomTypesCounter] = inputLineB;
         atomTypesCounter += 1;
+        atomTypes[atomTypesCounter] = inputLineB;
       }
       when "numberOfClusters" do numberOfClusters = inputLineB:int;
       otherwise writeln("input keyword not recognized");
     }
+  }
+  if (atomTypesCounter != numberOfAtomTypes) {
+    writeln("Too few atomTypes in input");
+    exit(0);
+  }
+  if (numberOfEachAtomTypeCounter != numberOfAtomTypes) {
+    writeln("Too few numberOfEachAtomType in input");
+    exit(0);
   }
 
   for clusterIndex in 1..numberOfClusters {

@@ -1,7 +1,10 @@
-6
+9
 numberOfClusters 5
+numberOfAtomTypes 3
 numberOfEachAtomType 3
 numberOfEachAtomType 6
+numberOfEachAtomType 2
 atomTypes U
 atomTypes O
+atomTypes N
 minBond 1.0
