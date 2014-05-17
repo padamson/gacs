@@ -7,28 +7,15 @@ var atomTypes:[1..2] string = ["U","O"];
 var numberOfClusters:int = 5;
 //var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real;
 var minBond: real = 1.0;
-var inputFilename: string;
 var clusterFilename: string;
 
 proc main(args: [] string){
-  var skipArg:bool = false;
-  for i in args.domain {
-    if args[i]=="--help" {
-      printUsage();
-      writeln("\nEXTRA ARGUMENTS:");
-      writeln(  "================");
-      writeln("-i <inputFilename>");
-      exit(0);
-    } else if (!skipArg && args[i]=="-i") {
-      inputFilename = args[i+1];
-      writeln("inputFilename: ",inputFilename);
-      skipArg = true;
-    } else if (skipArg) {
-      skipArg = false;
-    }
-  }
 
-  var inputFile = open("cluster.in",iomode.r);
+  var inputFilename: string;
+
+  inputFilename = getArgs(args);
+
+  var inputFile = open(inputFilename,iomode.r);
   var reader = inputFile.reader();
   var inputLineA, inputLineB: string;
   var numberOfEachAtomTypeCounter,atomTypesCounter:int = 1;
@@ -74,6 +61,32 @@ proc main(args: [] string){
   }
 
 }
+
+proc getArgs(args:[] string):string{
+  var inputFilename:string;
+  var skipArg:bool = false;
+  for i in args.domain {
+    if args[i]=="--help" {
+      printUsage();
+      writeln("\nEXTRA ARGUMENTS:");
+      writeln(  "================");
+      writeln("-i <inputFilename>");
+      exit(0);
+    } else if (!skipArg && args[i]=="-i") {
+      inputFilename = args[i+1];
+      writeln("Processing input from: ",inputFilename);
+      skipArg = true;
+    } else if (skipArg) {
+      skipArg = false;
+    }
+  }
+  if inputFilename == "" {
+    writeln("Incomplete commandline options");
+    exit(0);
+  }
+  return inputFilename;
+}
+
 
 proc generateClusterCartesianCoordinates (
     numberOfAtomTypes: int, 
