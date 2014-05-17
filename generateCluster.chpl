@@ -5,21 +5,100 @@ var numberOfAtomTypes:int = 2;
 var numberOfEachAtomType:[1..2] int = [2,5];
 var atomTypes:[1..2] string = ["U","O"];
 var numberOfClusters:int = 5;
+var numberOfOffspringPerClusterPair:int = 0;
+//TODO: add option to specify min bond length per atom type pair
 //var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real;
 var minBond: real = 1.0;
 var clusterFilename: string;
+var inputFilename: string;
+var generateRandom: bool = false;
+var generateOffspring: bool = false;
 
 proc main(args: [] string){
 
-  var inputFilename: string;
+  getArgs(args);
+  getInput();
 
-  inputFilename = getArgs(args);
+  if (generateRandom) then {
+    generateRandomClusterFiles();
+  } else if (generateOffspring) then {
+    generateOffspringClusterFiles();
+    if (numberOfOffspringPerClusterPair == 0) then {
+      writeln("Must set numberOfOffspringPerClusterPair > 0");
+      exit(0);
+    }
+  } else {
+    writeln("Must set generateRandom or generateOffspring in input");
+    exit(0);
+  }
+}
+
+proc generateOffspringClusterFiles(){
+  var offspringIndex: int = 1;
+  for i in 1..numberOfClusters {
+    for j in i+1..numberOfClusters {
+      for k in 1..numberOfOffspringPerClusterPair {
+        var offspringFilename: string = "offspring_" + offspringIndex + ".xyz";
+        writeln("cluster ",i," and cluster ",j," for offspring ",offspringIndex);
+        offspringIndex += 1;
+      }
+    }
+  }
+}
+
+proc generateRandomClusterFiles(){
+  for clusterIndex in 1..numberOfClusters {
+    clusterFilename = "cluster_" + clusterIndex + ".xyz";
+    writeln("Writing cluster to file: ",clusterFilename);
+    var clusterFile = open(clusterFilename,iomode.cw);
+    var writer = clusterFile.writer();
+
+    randomClusterCartesianCoordinates(
+        numberOfAtomTypes,
+        numberOfEachAtomType,
+        atomTypes,
+        minBond,
+        clusterIndex,
+        writer);
+
+    writer.flush();
+    writer.close();
+    clusterFile.close();
+  }
+}
+
+
+proc getArgs(args:[] string){
+  var skipArg:bool = false;
+  for i in args.domain {
+    if args[i]=="--help" {
+      printUsage();
+      writeln("\nEXTRA ARGUMENTS:");
+      writeln(  "================");
+      writeln("-i <inputFilename>");
+      exit(0);
+    } else if (!skipArg && args[i]=="-i") {
+      inputFilename = args[i+1];
+      writeln("Processing input from: ",inputFilename);
+      skipArg = true;
+    } else if (skipArg) {
+      skipArg = false;
+    }
+  }
+  if inputFilename == "" {
+    writeln("Incomplete commandline options");
+    exit(0);
+  }
+  return;
+}
+
+proc getInput(){
 
   var inputFile = open(inputFilename,iomode.r);
   var reader = inputFile.reader();
   var inputLineA, inputLineB: string;
   var numberOfEachAtomTypeCounter,atomTypesCounter:int = 0;
-  
+
   var numberOfInputLines: int = reader.read(int);
 
   for i in 1..numberOfInputLines {
@@ -41,6 +120,11 @@ proc main(args: [] string){
         atomTypes[atomTypesCounter] = inputLineB;
       }
       when "numberOfClusters" do numberOfClusters = inputLineB:int;
+      when "generateRandom" do generateRandom = inputLineB:bool;
+      when "generateOffspring" do generateOffspring = inputLineB:bool;
+      when "numberOfOffspringPerClusterPair" do {
+        numberOfOffspringPerClusterPair = inputLineB:int;
+      }
       otherwise writeln("input keyword not recognized");
     }
   }
@@ -53,54 +137,9 @@ proc main(args: [] string){
     exit(0);
   }
 
-  for clusterIndex in 1..numberOfClusters {
-    clusterFilename = "cluster_" + clusterIndex + ".xyz";
-    writeln("Writing cluster to file: ",clusterFilename);
-    var clusterFile = open(clusterFilename,iomode.cw);
-    var writer = clusterFile.writer();
-
-    generateClusterCartesianCoordinates(
-        numberOfAtomTypes,
-        numberOfEachAtomType,
-        atomTypes,
-        minBond,
-        clusterIndex,
-        writer);
-
-    writer.flush();
-    writer.close();
-    clusterFile.close();
-  }
-
 }
 
-proc getArgs(args:[] string):string{
-  var inputFilename:string;
-  var skipArg:bool = false;
-  for i in args.domain {
-    if args[i]=="--help" {
-      printUsage();
-      writeln("\nEXTRA ARGUMENTS:");
-      writeln(  "================");
-      writeln("-i <inputFilename>");
-      exit(0);
-    } else if (!skipArg && args[i]=="-i") {
-      inputFilename = args[i+1];
-      writeln("Processing input from: ",inputFilename);
-      skipArg = true;
-    } else if (skipArg) {
-      skipArg = false;
-    }
-  }
-  if inputFilename == "" {
-    writeln("Incomplete commandline options");
-    exit(0);
-  }
-  return inputFilename;
-}
-
-
-proc generateClusterCartesianCoordinates (
+proc randomClusterCartesianCoordinates (
     numberOfAtomTypes: int, 
     numberOfEachAtomType: [] int,
     atomTypes:[] string,

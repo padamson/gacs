@@ -1,4 +1,7 @@
-9
+12
+generateRandom false
+generateOffspring true
+numberOfOffspringPerClusterPair 5
 numberOfClusters 5
 numberOfAtomTypes 3
 numberOfEachAtomType 3
