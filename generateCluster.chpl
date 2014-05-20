@@ -35,15 +35,83 @@ proc main(args: [] string){
 
 proc generateOffspringClusterFiles(){
   var offspringIndex: int = 1;
+  var clusterFilenameI: string;
+  var clusterFileI:file;
+  var clusterFilenameJ: string;
+  var clusterFileJ:file;
+  var offspringFilename: string;
+  var offspringFile:file;
+  //TODO: add checking for correct numbers of atoms and atom types when reading cluster files
+  var numberOfAtomsI:int;
+  var atomTypesI: [1..2] string;
+  var atomCoordinatesI: [1..2,1..3] real;
+  var atomTypesJ: [1..2] string;
+  var atomCoordinatesJ: [1..2,1..3] real;
+  var numberOfAtomsJ:int;
+  var normI:[1..3] real;
+  var dI:real;
+  var normJ:[1..3] real;
+  var dJ:real;
+  var randomNumbers = new RandomStream();
   for i in 1..numberOfClusters {
-    for j in i+1..numberOfClusters {
-      for k in 1..numberOfOffspringPerClusterPair {
-        var offspringFilename: string = "offspring_" + offspringIndex + ".xyz";
-        writeln("cluster ",i," and cluster ",j," for offspring ",offspringIndex);
-        offspringIndex += 1;
-      }
+    clusterFilenameI = "cluster_" + i + ".xyz";
+    //TODO: create function to read geometry in from xyz file
+    clusterFileI = open(clusterFilenameI,iomode.r);
+    var readerI = clusterFileI.reader();
+    numberOfAtomsI = readerI.read(int);
+    atomTypesI.domain = {1..numberOfAtomsI};
+    atomCoordinatesI.domain = {1..numberOfAtomsI,1..3};
+    readerI.read(string);
+    writeln("parent geometry from ",clusterFilenameI);
+    for ii in 1..numberOfAtomsI {
+      atomTypesI[ii] = readerI.read(string);
+      atomCoordinatesI[ii,1] = readerI.read(real); 
+      atomCoordinatesI[ii,2] = readerI.read(real); 
+      atomCoordinatesI[ii,3] = readerI.read(real); 
+      writeln(atomTypesI[ii]," ",atomCoordinatesI[ii,1..3]);
     }
+    for j in i+1..numberOfClusters {
+      clusterFilenameJ = "cluster_" + j + ".xyz";
+      clusterFileJ = open(clusterFilenameJ,iomode.r);
+      var readerJ = clusterFileJ.reader();
+      numberOfAtomsJ = readerJ.read(int);
+      if (numberOfAtomsI != numberOfAtomsJ) then {
+        writeln("parent cluster files do not have the same numbers of atoms");
+        exit(0);
+      }
+      atomTypesJ.domain = {1..numberOfAtomsJ};
+      atomCoordinatesJ.domain = {1..numberOfAtomsJ,1..3};
+      for k in 1..numberOfOffspringPerClusterPair {
+        writeln("cluster ",i," and cluster ",j," for offspring ",offspringIndex);
+        offspringFilename = "offspring_" + offspringIndex + ".xyz";
+        offspringFile = open(offspringFilename,iomode.cw);
+        var writer = offspringFile.writer();
+        writer.writeln(numberOfAtomsI);
+
+        (normI,dI) = generateRandomPlane(randomNumbers);
+        (normJ,dJ) = generateRandomPlane(randomNumbers);
+
+
+
+        offspringIndex += 1;
+        writer.flush();
+        writer.close();
+        offspringFile.close();
+      }
+      readerJ.close();
+    }
+    readerI.close();
   }
+}
+
+proc generateRandomPlane(randomNumbers:RandomStream){
+  var norm: [1..3] real;
+  fillRandom(norm);
+  norm = -1.0 + norm * 2.0;
+  var d:real = randomNumbers.getNext();
+  writeln("norm: ",norm);
+  writeln("d: ",d);
+  return (norm,d);
 }
 
 proc generateRandomClusterFiles(){
