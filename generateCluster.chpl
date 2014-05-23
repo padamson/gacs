@@ -1,6 +1,7 @@
 use Random;
 use Help;
 
+var numberOfAtoms: int = 7;
 var numberOfAtomTypes:int = 2;
 var numberOfEachAtomType:[1..2] int = [2,5];
 var atomTypes:[1..2] string = ["U","O"];
@@ -18,6 +19,12 @@ proc main(args: [] string){
 
   getArgs(args);
   getInput();
+  processInput();
+  takeAction();
+
+}
+
+proc takeAction(){
 
   if (generateRandom) then {
     generateRandomClusterFiles();
@@ -31,76 +38,152 @@ proc main(args: [] string){
     writeln("Must set generateRandom or generateOffspring in input");
     exit(0);
   }
+
+}
+
+proc processInput(){
+  numberOfAtoms = 0;
+  for i in 1..numberOfAtomTypes {
+    numberOfAtoms += numberOfEachAtomType[i];
+  }
 }
 
 proc generateOffspringClusterFiles(){
   var offspringIndex: int = 1;
   var clusterFilenameI: string;
-  var clusterFileI:file;
   var clusterFilenameJ: string;
   var clusterFileJ:file;
   var offspringFilename: string;
   var offspringFile:file;
   //TODO: add checking for correct numbers of atoms and atom types when reading cluster files
-  var numberOfAtomsI:int;
-  var atomTypesI: [1..2] string;
-  var atomCoordinatesI: [1..2,1..3] real;
-  var atomTypesJ: [1..2] string;
-  var atomCoordinatesJ: [1..2,1..3] real;
-  var numberOfAtomsJ:int;
+  var atomTypesI: [1..numberOfAtoms] string;
+  var atomCoordinatesI: [1..numberOfAtoms,1..3] real;
+  var atomTypesJ: [1..numberOfAtoms] string;
+  var atomCoordinatesJ: [1..numberOfAtoms,1..3] real;
   var normI:[1..3] real;
   var dI:real;
   var normJ:[1..3] real;
   var dJ:real;
+  var signedPPDI:[1..numberOfAtoms] real;
+  var posPPDI:[1..numberOfAtomTypes] int;
+  var negPPDI:[1..numberOfAtomTypes] int;
+  var signedPPDJ:[1..numberOfAtoms] real;
+  var posPPDJ:[1..numberOfAtomTypes] int;
+  var negPPDJ:[1..numberOfAtomTypes] int;
+  var posnegIndex:int;
+  var numberOfAtomsIndex:int;
   var randomNumbers = new RandomStream();
-  for i in 1..numberOfClusters {
+  var boolTemp:bool;
+
+  for i in 1..numberOfClusters-1 {
+
     clusterFilenameI = "cluster_" + i + ".xyz";
-    //TODO: create function to read geometry in from xyz file
-    clusterFileI = open(clusterFilenameI,iomode.r);
-    var readerI = clusterFileI.reader();
-    numberOfAtomsI = readerI.read(int);
-    atomTypesI.domain = {1..numberOfAtomsI};
-    atomCoordinatesI.domain = {1..numberOfAtomsI,1..3};
-    readerI.read(string);
-    writeln("parent geometry from ",clusterFilenameI);
-    for ii in 1..numberOfAtomsI {
-      atomTypesI[ii] = readerI.read(string);
-      atomCoordinatesI[ii,1] = readerI.read(real); 
-      atomCoordinatesI[ii,2] = readerI.read(real); 
-      atomCoordinatesI[ii,3] = readerI.read(real); 
-      writeln(atomTypesI[ii]," ",atomCoordinatesI[ii,1..3]);
-    }
+    writeln("reading parent geometry from ",clusterFilenameI);
+    (atomTypesI,atomCoordinatesI) = readClusterXYZ(clusterFilenameI);
+
     for j in i+1..numberOfClusters {
+
       clusterFilenameJ = "cluster_" + j + ".xyz";
-      clusterFileJ = open(clusterFilenameJ,iomode.r);
-      var readerJ = clusterFileJ.reader();
-      numberOfAtomsJ = readerJ.read(int);
-      if (numberOfAtomsI != numberOfAtomsJ) then {
-        writeln("parent cluster files do not have the same numbers of atoms");
-        exit(0);
-      }
-      atomTypesJ.domain = {1..numberOfAtomsJ};
-      atomCoordinatesJ.domain = {1..numberOfAtomsJ,1..3};
+      writeln("reading parent geometry from ",clusterFilenameJ);
+      (atomTypesJ,atomCoordinatesJ) = readClusterXYZ(clusterFilenameJ);
+
+      //TODO: need to adjust offspring per pair based on fitness of parents
       for k in 1..numberOfOffspringPerClusterPair {
+
+
         writeln("cluster ",i," and cluster ",j," for offspring ",offspringIndex);
         offspringFilename = "offspring_" + offspringIndex + ".xyz";
         offspringFile = open(offspringFilename,iomode.cw);
         var writer = offspringFile.writer();
-        writer.writeln(numberOfAtomsI);
+        writer.writeln(numberOfAtoms);
 
-        (normI,dI) = generateRandomPlane(randomNumbers);
-        (normJ,dJ) = generateRandomPlane(randomNumbers);
+        boolTemp = false;
 
+        while (boolTemp == false ) {
+          (normI,dI) = generateRandomPlane(randomNumbers);
+          (normJ,dJ) = generateRandomPlane(randomNumbers);
 
+          for ii in 1..numberOfAtoms {
+            signedPPDI[ii] = signedPointPlaneDistance(normI,dI,atomCoordinatesI[ii,1..3]);
+            //writeln("signedPPDI[",ii,"]: ",signedPPDI[ii]);
+            signedPPDJ[ii] = signedPointPlaneDistance(normJ,dJ,atomCoordinatesJ[ii,1..3]);
+            //writeln("signedPPDI[",ii,"]: ",signedPPDJ[ii]);
+          }
+
+          posnegIndex = 1; 
+          numberOfAtomsIndex = 1;
+          posPPDI = 0;
+          negPPDI = 0;
+          posPPDJ = 0;
+          negPPDJ = 0;
+          for ij in 1..numberOfAtomTypes {
+            for ik in 1..numberOfEachAtomType[ij] {
+
+              if signedPPDI[numberOfAtomsIndex] > 0 then {
+                posPPDI[posnegIndex] += 1;
+              } else {
+                negPPDI[posnegIndex] += 1;
+              }
+
+              if signedPPDJ[numberOfAtomsIndex] > 0 then {
+                posPPDJ[posnegIndex] += 1;
+              } else {
+                negPPDJ[posnegIndex] += 1;
+              }
+
+              numberOfAtomsIndex += 1;
+            }
+            posnegIndex += 1;
+          }
+
+          /*
+          writeln("posPPDI:",posPPDI);
+          writeln("negPPDI:",negPPDI);
+          writeln("posPPDJ:",posPPDJ);
+          writeln("negPPDJ:",negPPDJ);
+          */
+
+          //writeln("pos + pos: ",posPPDI + posPPDJ);
+          //writeln("numberOfEachAtomType: ",numberOfEachAtomType);
+          //TODO: check to make sure there is at least one atom in each half
+
+          if ((+ reduce posPPDI) > 0 && 
+              (+ reduce posPPDJ) > 0 && 
+              (+ reduce negPPDJ) > 0    ) then {
+
+            var pospos:[1..numberOfAtomTypes] int = posPPDI + posPPDJ;
+            var posneg:[1..numberOfAtomTypes] int = posPPDI + negPPDJ;
+
+            boolTemp = true;
+            for ii in 1..numberOfAtomTypes {
+              boolTemp = (boolTemp && (pospos[ii] == numberOfEachAtomType[ii]) );
+            }
+            if boolTemp then {
+              writeln("pospos is true");
+              writeln("posPPDI:",posPPDI);
+              writeln("posPPDJ:",posPPDJ);
+            } else {
+              boolTemp = true;
+              for ii in 1..numberOfAtomTypes {
+                boolTemp = (boolTemp && (posneg[ii] == numberOfEachAtomType[ii]) );
+              }
+              if boolTemp then {
+                writeln("posneg is true");
+                writeln("posPPDI:",posPPDI);
+                writeln("negPPDJ:",negPPDJ);
+              }
+            }
+          }
+
+        } //while
 
         offspringIndex += 1;
         writer.flush();
         writer.close();
         offspringFile.close();
+
       }
-      readerJ.close();
     }
-    readerI.close();
   }
 }
 
@@ -109,8 +192,8 @@ proc generateRandomPlane(randomNumbers:RandomStream){
   fillRandom(norm);
   norm = -1.0 + norm * 2.0;
   var d:real = randomNumbers.getNext();
-  writeln("norm: ",norm);
-  writeln("d: ",d);
+  //writeln("norm: ",norm);
+  //writeln("d: ",d);
   return (norm,d);
 }
 
@@ -215,11 +298,6 @@ proc randomClusterCartesianCoordinates (
     clusterIndex: int,
     writer: channel) {
 
-  var numberOfAtoms: int = 0;
-  for i in 1..numberOfAtomTypes {
-    numberOfAtoms += numberOfEachAtomType[i];
-  }
-
   var clusterVolume: real = cbrt(numberOfAtoms);
 
   var cartesianCoordinates: [1..numberOfAtoms,1..3] real; 
@@ -267,6 +345,37 @@ proc randomClusterCartesianCoordinates (
       atomTypes, cartesianCoordinates, writer);
 
 }
+proc readClusterXYZ(clusterFilename:string){
+  var clusterFile = open(clusterFilename,iomode.r);
+  var reader = clusterFile.reader();
+  var numberOfAtomsTemp = reader.read(int);
+  if (numberOfAtomsTemp != numberOfAtoms) then {
+    writeln("wrong number of atoms in parent file ",clusterFilename);
+    exit(0);
+  }
+  var atomTypesTemp: [1..numberOfAtoms] string;
+  var atomCoordinatesTemp: [1..numberOfAtoms,1..3] real;
+  reader.read(string);
+  for i in 1..numberOfAtoms {
+    atomTypesTemp[i] = reader.read(string);
+    atomCoordinatesTemp[i,1] = reader.read(real); 
+    atomCoordinatesTemp[i,2] = reader.read(real); 
+    atomCoordinatesTemp[i,3] = reader.read(real); 
+    //writeln(atomTypesTemp[i]," ",atomCoordinatesTemp[i,1..3]);
+  }
+  //TODO: must always sort atomTypes and atomCoordinates in a consistent way before writing
+  //to support the following error checking
+  //TODO: fix following error checking; will require some work earlier on
+  /*
+     if (atomTypesTemp != atomTypes) then {
+     writeln("wrong atom types in parent file ",clusterFilename);
+     exit(0);
+     }
+   */
+  reader.close();
+  clusterFile.close();
+  return (atomTypesTemp, atomCoordinatesTemp);
+}
 
 proc writeClusterXYZ(
     numberOfAtoms:int, 
@@ -289,6 +398,10 @@ proc writeClusterXYZ(
     }
   }
 
+}
+
+proc signedPointPlaneDistance(n:[1..3] real, d:real, x:[1..3] real):real{
+  return (n[1]*x[1]+n[2]*x[2]+n[3]*x[3]+d)/(sqrt(n[1]**2+n[2]**2+n[3]**2));
 }
 
 proc distance(x1: [1..3] real, x2: [1..3] real): real{
