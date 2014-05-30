@@ -81,222 +81,6 @@ proc randomInteger_1_2():int{
   }
 }
 
-proc generateOffspringClusterFiles(){
-  var offspringIndex: int = 1;
-  var clusterFilenameI: string;
-  var clusterFilenameJ: string;
-  var clusterFileJ:file;
-  var offspringFilename: string;
-  var offspringFile:file;
-  //TODO: add checking for correct numbers of atoms and atom types when reading cluster files
-  var atomTypesI: [1..numberOfAtoms] string;
-  var atomCoordinatesI: [1..numberOfAtoms,1..3] real;
-  var atomTypesJ: [1..numberOfAtoms] string;
-  var atomCoordinatesJ, atomCoordinatesJMirror: [1..numberOfAtoms,1..3] real;
-  var normI:[1..3] real;
-  var dI:real;
-  var normJ:[1..3] real;
-  var dJ:real;
-  var signedPPDI,signedPPDIMirror:[1..numberOfAtoms] real;
-  var posPPDI:[1..numberOfAtomTypes] int;
-  var negPPDI:[1..numberOfAtomTypes] int;
-  var signedPPDJ,signedPPDJMirror:[1..numberOfAtoms] real;
-  var posPPDJ:[1..numberOfAtomTypes] int;
-  var negPPDJ:[1..numberOfAtomTypes] int;
-  var posnegIndex:int;
-  var numberOfAtomsIndex:int;
-  var posposCoord, posnegCoord, negposCoord, negnegCoord, 
-      offspringCoord: [1..numberOfAtoms,1..3] real; 
-  var posposAtomType, posnegAtomType, negposAtomType, negnegAtomType, 
-      offspringAtomType: [1..numberOfAtoms] string; 
-  var randomNumbers = new RandomStream();
-  var generatedOffspring:bool;
-  var validOffspring:[1..4] string;
-  var validOffspringCounter:int;
-
-  for i in 1..numberOfClusters-1 {
-
-    clusterFilenameI = "cluster_" + i + ".xyz";
-    writeln("reading parent geometry from ",clusterFilenameI);
-    (atomTypesI,atomCoordinatesI) = readClusterXYZ(clusterFilenameI);
-    //writeln("atomTypesI",atomTypesI);
-
-    for j in i+1..numberOfClusters {
-
-      clusterFilenameJ = "cluster_" + j + ".xyz";
-      writeln("reading parent geometry from ",clusterFilenameJ);
-      (atomTypesJ,atomCoordinatesJ) = readClusterXYZ(clusterFilenameJ);
-
-      //TODO: need to adjust offspring per pair based on fitness of parents
-      for k in 1..numberOfOffspringPerClusterPair {
-
-        writeln("cluster ",i," and cluster ",j," for offspring ",offspringIndex);
-        offspringFilename = "offspring_" + offspringIndex + ".xyz";
-        offspringFile = open(offspringFilename,iomode.cw);
-        var writer = offspringFile.writer();
-
-        generatedOffspring = false;
-        validOffspringCounter = 0;
-
-        while (generatedOffspring == false ) {
-          (normI,dI) = generateRandomPlane(randomNumbers);
-          (normJ,dJ) = generateRandomPlane(randomNumbers);
-
-          for ii in 1..numberOfAtoms {
-            signedPPDI[ii] = signedPointPlaneDistance(normI,dI,atomCoordinatesI[ii,1..3]);
-            //writeln("signedPPDI[",ii,"]: ",signedPPDI[ii]);
-            signedPPDJ[ii] = signedPointPlaneDistance(normJ,dJ,atomCoordinatesJ[ii,1..3]);
-            //writeln("signedPPDI[",ii,"]: ",signedPPDJ[ii]);
-          }
-
-          posnegIndex = 1; 
-          numberOfAtomsIndex = 1;
-          posPPDI = 0;
-          negPPDI = 0;
-          posPPDJ = 0;
-          negPPDJ = 0;
-          for ij in 1..numberOfAtomTypes {
-            for ik in 1..numberOfEachAtomType[ij] {
-
-              if signedPPDI[numberOfAtomsIndex] > 0 then {
-                posPPDI[posnegIndex] += 1;
-              } else {
-                negPPDI[posnegIndex] += 1;
-              }
-
-              if signedPPDJ[numberOfAtomsIndex] > 0 then {
-                posPPDJ[posnegIndex] += 1;
-              } else {
-                negPPDJ[posnegIndex] += 1;
-              }
-              numberOfAtomsIndex += 1;
-            }
-            posnegIndex += 1;
-          }
-
-          if ((+ reduce posPPDI) > 0 && 
-              (+ reduce negPPDI) > 0 && 
-              (+ reduce posPPDJ) > 0 && 
-              (+ reduce negPPDJ) > 0    ) then {
-
-            var pospos:[1..numberOfAtomTypes] int = posPPDI + posPPDJ; //option 1
-            var posneg:[1..numberOfAtomTypes] int = posPPDI + negPPDJ; //option 2
-            var negpos:[1..numberOfAtomTypes] int = negPPDI + posPPDJ; //option 3
-            var negneg:[1..numberOfAtomTypes] int = negPPDI + negPPDJ; //option 4
-
-            if checkOffspringCandidate(pospos) then {
-              validOffspringCounter += 1;
-              validOffspring[validOffspringCounter] = "pospos";
-              writeln("pospos is true");
-              writeln("posPPDI:",posPPDI);
-              writeln("posPPDJ:",posPPDJ);
-
-            }
-            
-            if checkOffspringCandidate(posneg) then {
-              validOffspringCounter += 1;
-              validOffspring[validOffspringCounter] = "posneg";
-              writeln("posneg is true");
-              writeln("posPPDI:",posPPDI);
-              writeln("negPPDJ:",negPPDJ);
-            }
-
-            if checkOffspringCandidate(negpos) then {
-              validOffspringCounter += 1;
-              validOffspring[validOffspringCounter] = "negpos";
-              writeln("negpos is true");
-              writeln("negPPDI:",negPPDI);
-              writeln("posPPDJ:",posPPDJ);
-            }
-            
-            if checkOffspringCandidate(negneg) then {
-              validOffspringCounter += 1;
-              validOffspring[validOffspringCounter] = "negneg";
-              writeln("negneg is true");
-              writeln("negPPDI:",negPPDI);
-              writeln("negPPDJ:",negPPDJ);
-            }
-
-            if validOffspringCounter > 0 then {
-              writeln("validOffspring: ",validOffspring);
-              var offspringSelection:int;
-              if validOffspringCounter == 2 then {
-                offspringSelection = randomInteger_1_2();
-              } else if validOffspringCounter == 4 then {
-                offspringSelection = randomInteger_1_4();
-              } else {
-                writeln("error when selecting offspring");
-                exit(0);
-              }
-              writeln("offspringSelection: ",offspringSelection);
-              //invert atomCoordinatesJ before splicing
-              atomCoordinatesJMirror = -1.0*atomCoordinatesJ;
-              select validOffspring[offspringSelection] {
-                when "pospos" {
-                  (offspringAtomType,offspringCoord) = 
-                    fillOffspring(
-                        signedPPDI, atomTypesI, atomCoordinatesI,
-                        signedPPDJ, atomTypesJ, atomCoordinatesJMirror);
-                }
-                //TODO: add options for other offspring
-                when "posneg" {
-                  signedPPDJMirror = -1*signedPPDJ;
-                  (offspringAtomType,offspringCoord) = 
-                    fillOffspring(
-                        signedPPDI, atomTypesI, atomCoordinatesI,
-                        signedPPDJMirror, atomTypesJ, atomCoordinatesJMirror);
-                }
-                when "negpos" {
-                  signedPPDIMirror = -1*signedPPDI;
-                  (offspringAtomType,offspringCoord) = 
-                    fillOffspring(
-                        signedPPDIMirror, atomTypesI, atomCoordinatesI,
-                        signedPPDJ, atomTypesJ, atomCoordinatesJMirror);
-                }
-                when "negneg" {
-                  signedPPDIMirror = -1*signedPPDI;
-                  signedPPDJMirror = -1*signedPPDJ;
-                  (offspringAtomType,offspringCoord) = 
-                    fillOffspring(
-                        signedPPDIMirror, atomTypesI, atomCoordinatesI,
-                        signedPPDJMirror, atomTypesJ, atomCoordinatesJMirror);
-                }
-              }
-
-              //TODO: mutate offspring
-              writeOffspringXYZ(
-                  offspringIndex,
-                  offspringAtomType,
-                  offspringCoord,
-                  writer);
-
-              writeln("offspringAtomType: ",offspringAtomType);
-              writeln("offspringCoord: ",offspringCoord);
-                
-            }
-
-
-            //exit this offspring generation loop if we have a valid offspring
-            generatedOffspring = 
-              checkOffspringCandidate(pospos) ||
-              checkOffspringCandidate(negpos) ||
-              checkOffspringCandidate(posneg) ||
-              checkOffspringCandidate(negneg);
-
-          }
-
-        } //while
-
-        offspringIndex += 1;
-        writer.flush();
-        writer.close();
-        offspringFile.close();
-
-      }
-    }
-  }
-}
-
 proc generateOffspringClusters(){
   var offspringIndex: int = 1;
   var clusterFilenameI: string;
@@ -355,7 +139,7 @@ proc generateOffspringClusters(){
         generatedOffspring = false;
         validOffspringCounter = 0;
 
-        while (generatedOffspring == false ) {
+        while (validOffspringCounter == 0 ) {
 
           (Rx,Ry,Rz) = generateRandomRotationMatrices(randomNumbers);
           atomCoordinatesJRotated = rotateCoordinates(Rx,Ry,Rz,atomCoordinatesJ);
@@ -410,19 +194,20 @@ proc generateOffspringClusters(){
               (+ reduce posPPDJ) > 0 && 
               (+ reduce negPPDJ) > 0    ) then {
 
-            var pospos:[1..numberOfAtomTypes] int = posPPDI + posPPDJ; //option 1
+            //var pospos:[1..numberOfAtomTypes] int = posPPDI + posPPDJ; //option 1
             var posneg:[1..numberOfAtomTypes] int = posPPDI + negPPDJ; //option 2
             var negpos:[1..numberOfAtomTypes] int = negPPDI + posPPDJ; //option 3
-            var negneg:[1..numberOfAtomTypes] int = negPPDI + negPPDJ; //option 4
+            //var negneg:[1..numberOfAtomTypes] int = negPPDI + negPPDJ; //option 4
 
+            /*
             if checkOffspringCandidate(pospos) then {
               validOffspringCounter += 1;
               validOffspring[validOffspringCounter] = "pospos";
               writeln("pospos is true");
               writeln("posPPDI:",posPPDI);
               writeln("posPPDJ:",posPPDJ);
-
             }
+            */
             
             if checkOffspringCandidate(posneg) then {
               validOffspringCounter += 1;
@@ -440,6 +225,7 @@ proc generateOffspringClusters(){
               writeln("posPPDJ:",posPPDJ);
             }
             
+            /*
             if checkOffspringCandidate(negneg) then {
               validOffspringCounter += 1;
               validOffspring[validOffspringCounter] = "negneg";
@@ -447,43 +233,50 @@ proc generateOffspringClusters(){
               writeln("negPPDI:",negPPDI);
               writeln("negPPDJ:",negPPDJ);
             }
+            */
 
             if validOffspringCounter > 0 then {
               writeln("validOffspring: ",validOffspring);
               var offspringSelection:int;
+
               if validOffspringCounter == 2 then {
                 offspringSelection = randomInteger_1_2();
+                /*
               } else if validOffspringCounter == 4 then {
                 offspringSelection = randomInteger_1_4();
+                */
               } else {
                 writeln("error when selecting offspring");
                 exit(0);
               }
+
               writeln("offspringSelection: ",offspringSelection);
               //invert atomCoordinatesJ before splicing
-              atomCoordinatesJMirror = -1.0*atomCoordinatesJ;
+              //atomCoordinatesJMirror = -1.0*atomCoordinatesJ;
               select validOffspring[offspringSelection] {
+                /*
                 when "pospos" {
                   (offspringAtomType,offspringCoord) = 
                     fillOffspring(
                         signedPPDI, atomTypesI, atomCoordinatesI,
                         signedPPDJ, atomTypesJ, atomCoordinatesJMirror);
                 }
-                //TODO: add options for other offspring
+                */
                 when "posneg" {
                   signedPPDJMirror = -1*signedPPDJ;
                   (offspringAtomType,offspringCoord) = 
                     fillOffspring(
                         signedPPDI, atomTypesI, atomCoordinatesI,
-                        signedPPDJMirror, atomTypesJ, atomCoordinatesJMirror);
+                        signedPPDJMirror, atomTypesJ, atomCoordinatesJ);
                 }
                 when "negpos" {
                   signedPPDIMirror = -1*signedPPDI;
                   (offspringAtomType,offspringCoord) = 
                     fillOffspring(
                         signedPPDIMirror, atomTypesI, atomCoordinatesI,
-                        signedPPDJ, atomTypesJ, atomCoordinatesJMirror);
+                        signedPPDJ, atomTypesJ, atomCoordinatesJ);
                 }
+                /*
                 when "negneg" {
                   signedPPDIMirror = -1*signedPPDI;
                   signedPPDJMirror = -1*signedPPDJ;
@@ -492,6 +285,7 @@ proc generateOffspringClusters(){
                         signedPPDIMirror, atomTypesI, atomCoordinatesI,
                         signedPPDJMirror, atomTypesJ, atomCoordinatesJMirror);
                 }
+                */
               }
 
               //TODO: mutate offspring
@@ -505,14 +299,6 @@ proc generateOffspringClusters(){
               writeln("offspringCoord: ",offspringCoord);
                 
             }
-
-
-            //exit this offspring generation loop if we have a valid offspring
-            generatedOffspring = 
-              checkOffspringCandidate(pospos) ||
-              checkOffspringCandidate(negpos) ||
-              checkOffspringCandidate(posneg) ||
-              checkOffspringCandidate(negneg);
 
           }
 
@@ -534,6 +320,8 @@ proc fillOffspring(
   var offspringAtomType:[1..numberOfAtoms] string;
   var offspringCoord:[1..numberOfAtoms,1..3] real;
   var ii:int = 0;
+  var distanceCheckCounter: int;
+  var distanceCheck: real;
   for i in 1..numberOfAtoms {
     if signedPPDI[i] > 0 then {
       ii += 1;
@@ -546,6 +334,7 @@ proc fillOffspring(
       offspringCoord[ii,1..3] = atomCoordinatesJ[i,1..3];
     }
   }
+
   return (offspringAtomType, offspringCoord);
 }
 
@@ -580,7 +369,7 @@ proc rotateCoordinates(Rx:[1..3,1..3] real, Ry:[1..3,1..3] real, Rz:[1..3,1..3] 
   }
   return coordinates;
 }
-  
+
 proc multiplyMatrixVector(A:[1..3,1..3] real, x:[1..3] real): [1..3] real{
   var xp:[1..3] real = 0.0;
   for i in 1..3 {

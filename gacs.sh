@@ -1,7 +1,7 @@
 #!/bin/bash
 #datadir=~/Research/data
 
-generateCluster
+generateCluster -i cluster.in
 
 for i in {1..5}
 do
