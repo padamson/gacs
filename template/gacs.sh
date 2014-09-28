@@ -11,7 +11,10 @@ cd /home/padamson/Research/$wrkdir
 mach=`uname -n | awk '{print substr ($0, 0, 2)}'`
 
 if [[ "$mach" == 'sp' ]]; then
-  sed "s/u3o8/$wrkdir/g" /home/padamson/gacs-uranium/template/clstr_1_10.csh > clstr_1_10.csh
+  ncpu=$(expr $nnodes * 16)
+  sed "s/u3o8/$wrkdir/g" /home/padamson/gacs-uranium/template/clstr_1_10.csh > clstr_1_10.csh.$$
+  sed "s/out 16/out $ncpu/g" clstr_1_10.csh.$$ > clstr_1_10.csh
+  rm clstr_1_10.csh.$$
   account=WPTAFITO11533311
   sed "s/u3o8/$wrkdir/g" /home/padamson/gacs-uranium/template/clstr_1_10.js > clstr_1_10.js.$$
   sed "s/account/$account/g" clstr_1_10.js.$$ > clstr_1_10.js
@@ -19,8 +22,10 @@ if [[ "$mach" == 'sp' ]]; then
   cp clstr_1_10.js.$$ clstr_1_10.js
   rm clstr_1_10.js.$$
 elif [[ "$mach" == 'li' ]]; then
-  sed "s/apps/app/g" /home/padamson/gacs-uranium/template/clstr_1_10.csh > clstr_1_10.csh.$$
-  sed "s/u3o8/$wrkdir/g" clstr_1_10.csh.$$ > clstr_1_10.csh
+  ncpu=$(expr $nnodes * 24)
+  sed "s/apps/app/g" /home/padamson/gacs-uranium/template/clstr_1_10.csh > clstr_1_10.csh
+  sed "s/u3o8/$wrkdir/g" clstr_1_10.csh > clstr_1_10.csh.$$
+  sed "s/out 16/out $ncpu/g" clstr_1_10.csh.$$ > clstr_1_10.csh
   rm clstr_1_10.csh.$$
   account=WPMWPASC96150LTN
   sed "s/u3o8/$wrkdir/g" /home/padamson/gacs-uranium/template/clstr_1_10.js > clstr_1_10.js.$$
@@ -31,6 +36,7 @@ elif [[ "$mach" == 'li' ]]; then
   cp clstr_1_10.js.$$ clstr_1_10.js
   rm clstr_1_10.js.$$
 fi
+chmod u+x clstr_1_10.csh
 
 sed "s/u3o8/$wrkdir/g" /home/padamson/gacs-uranium/template/nw_head.txt > nw_head.txt.$$
 sed "s/charge 0/charge $charge/g" nw_head.txt.$$ > nw_head.txt

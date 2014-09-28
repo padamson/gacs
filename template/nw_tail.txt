@@ -2,7 +2,7 @@ end
 
 dft
   XC b3lyp
-  iterations 100
+  iterations 200
 end
 
 #Christiansen, Ross and Ermler ARECPs from standard basis set libary "crenbl_ecp"
