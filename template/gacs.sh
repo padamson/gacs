@@ -1,5 +1,15 @@
 #!/bin/bash
-#datadir=~/Research/data
+if (( $# != 6 )); then
+  echo "Illegal number of parameters (expecting 6)"
+  echo "==================================================="
+  echo "nu) number of Uranium atoms (integer)"
+  echo "no) number of Oxygen atoms (integer)"
+  echo "charge) charge of molecule (e.g. +0, -1, +1)"
+  echo "mult) multiplicity of molecule (1 or 2)"
+  echo "nnodes) number of nodes (integer)"
+  echo "wall) walltime requested in hours (e.g. 12, 24, 36)"
+  exit 1
+fi
 nu=$1
 no=$2
 charge=$3
