@@ -8,4 +8,4 @@ numberOfEachAtomType 3
 numberOfEachAtomType 8
 atomTypes U
 atomTypes O
-minBond 1.5
+minBond 1.7
