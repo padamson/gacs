@@ -3,7 +3,8 @@
 nu=$1
 no=$2
 charge=$3
-nnodes=$4
+mult=$4
+nnodes=$5
 wrkdir=u${1}o${2}${charge}
 mkdir /home/padamson/Research/$wrkdir
 cd /home/padamson/Research/$wrkdir
@@ -41,8 +42,14 @@ chmod u+x clstr_1_10.csh
 sed "s/u3o8/$wrkdir/g" /home/padamson/gacs-uranium/template/nw_head.txt > nw_head.txt.$$
 sed "s/charge 0/charge $charge/g" nw_head.txt.$$ > nw_head.txt
 rm nw_head.txt.$$
-cp /home/padamson/gacs-uranium/template/nw_tail.txt .
 
+if [[ "$mult" == '2' ]]; then
+  sed "s/mult 1/mult 2/g" /home/padamson/gacs-uranium/template/nw_tail.txt > nw_tail.txt.$$
+  sed "s/#odft/odft/g" nw_tail.txt.$$ > nw_tail.txt
+  rm nw_tail.txt.$$
+elif [[ "$mult" == '1' ]]; then
+  cp /home/padamson/gacs-uranium/template/nw_tail.txt .
+fi
 
 sed "s/numberOfEachAtomType 3/numberOfEachAtomType $nu/g" /home/padamson/gacs-uranium/template/cluster.in > cluster.in.$$
 sed "s/numberOfEachAtomType 8/numberOfEachAtomType $no/g" cluster.in.$$ > cluster.in
@@ -57,4 +64,4 @@ do
   rm cluster_$i.xyz cluster_$i.$$
 done
 
-qsub clstr_1_10.js
+#qsub clstr_1_10.js

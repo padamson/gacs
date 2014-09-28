@@ -1,15 +1,17 @@
 use Random;
 use Help;
 
-var numberOfAtoms: int = 7;
-var numberOfAtomTypes:int = 2;
-var numberOfEachAtomType:[1..2] int = [2,5];
-var atomTypes:[1..2] string = ["U","O"];
-var numberOfClusters:int = 5;
-var numberOfOffspringPerClusterPair:int = 0;
+var numberOfAtoms:int;
+var numberOfAtomTypes:int;
+var D1:domain(1) = {1..numberOfAtomTypes};
+var D2:domain(2) = {1..numberOfAtomTypes,1..numberOfAtomTypes};
+var numberOfEachAtomType:[D1] int;
+var atomTypes:[D1] string;
+var numberOfClusters:int;
+var numberOfOffspringPerClusterPair:int;
 //TODO: add option to specify min bond length per atom type pair
 //var minBondLength: [1..numberOfAtomTypes,1..numberOfAtomTypes] real;
-var minBond: real = 1.0;
+var minBondArray:[D2] real; 
 var clusterFilename: string;
 var inputFilename: string;
 var generateRandom: bool = false;
@@ -417,7 +419,7 @@ proc generateRandomClusters(){
         numberOfAtomTypes,
         numberOfEachAtomType,
         atomTypes,
-        minBond,
+        minBondArray,
         clusterIndex,
         writer);
 
@@ -463,27 +465,45 @@ proc getInput(){
 
   for i in 1..numberOfInputLines {
     inputLineA = reader.read(string);
-    inputLineB = reader.read(string);
     select inputLineA {
-      when "minBond" do minBond=inputLineB:real;
       when "numberOfAtomTypes" do {
-        numberOfAtomTypes=inputLineB:int;
-        numberOfEachAtomType.domain = {1..numberOfAtomTypes};
-        atomTypes.domain = {1..numberOfAtomTypes};
+        //inputLineB = reader.read(string);
+        numberOfAtomTypes = reader.read(int);
+        D1 = {1..numberOfAtomTypes};
+        D2 = {1..numberOfAtomTypes, 1..numberOfAtomTypes};
       }
       when "numberOfEachAtomType" do {
+        inputLineB = reader.read(string);
         numberOfEachAtomTypeCounter += 1;
         numberOfEachAtomType[numberOfEachAtomTypeCounter]=inputLineB:int;
       }
       when "atomTypes" do {
+        inputLineB = reader.read(string);
         atomTypesCounter += 1;
         atomTypes[atomTypesCounter] = inputLineB;
       }
-      when "numberOfClusters" do numberOfClusters = inputLineB:int;
-      when "generateRandom" do generateRandom = inputLineB:bool;
-      when "generateOffspring" do generateOffspring = inputLineB:bool;
+      when "numberOfClusters" do {
+        inputLineB = reader.read(string);
+        numberOfClusters = inputLineB:int;
+      }
+      when "generateRandom" do {
+        inputLineB = reader.read(string);
+        generateRandom = inputLineB:bool;
+      }
+      when "generateOffspring" do {
+        inputLineB = reader.read(string);
+        generateOffspring = inputLineB:bool;
+      }
       when "numberOfOffspringPerClusterPair" do {
+        inputLineB = reader.read(string);
         numberOfOffspringPerClusterPair = inputLineB:int;
+      }
+      when "minBondArray" do {
+        for i in D2.dim(1) {
+          for j in D2.dim(2) {
+            minBondArray(i,j) = reader.read(real);
+          }
+        }
       }
       otherwise writeln("input keyword not recognized");
     }
@@ -503,10 +523,11 @@ proc randomClusterCartesianCoordinates (
     numberOfAtomTypes: int, 
     numberOfEachAtomType: [] int,
     atomTypes:[] string,
-    minBond: real,
+    minBondArray:[] real,
     clusterIndex: int,
     writer: channel) {
 
+  var minBond: real;
   var clusterVolume: real = cbrt(numberOfAtoms);
 
   var cartesianCoordinates: [1..numberOfAtoms,1..3] real; 
@@ -530,10 +551,12 @@ proc randomClusterCartesianCoordinates (
   var i: int = 1;
   label distanceCheckLoop while (i < numberOfAtoms) do {
     for j in i+1..numberOfAtoms {
+      minBond = minBondArray[atomTypeArray[i],atomTypeArray[j]];
       if (distance(cartesianCoordinates[i,1..3],cartesianCoordinates[j,1..3]) < minBond) {
         writeln("atom ",i," and atom ",j," are too close");
         writeln("atom ",i," coords: ",cartesianCoordinates[i,1..3]);
         writeln("atom ",j," coords: ",cartesianCoordinates[j,1..3]);
+        writeln("minBond: ",minBond);
         writeln("distance: ",distance(cartesianCoordinates[i,1..3],cartesianCoordinates[j,1..3]));
         fillRandom(cartesianCoordinates[j,1..3]);
         cartesianCoordinates[j,1..3] = clusterVolume * (2.0*cartesianCoordinates[j,1..3] - 1.0);

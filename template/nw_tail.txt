@@ -1,6 +1,8 @@
 end
 
 dft
+  mult 1
+  #odft
   XC b3lyp
   iterations 200
 end
