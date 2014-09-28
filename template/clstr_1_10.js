@@ -8,7 +8,7 @@
 #PBS -M           padamson
 #PBS -mbe
 #PBS -l           walltime=12:00:00
-#PBS -l           select=1:ncpus=32:mpiprocs=32
+#PBS -l           select=1:ncpus=16:mpiprocs=16
 #PBS -q           standard
   
 
