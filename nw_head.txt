@@ -1,9 +1,0 @@
-title "Optimization with LDA Approximation"
-echo
-
-start u3o6
-
-charge 1
-
-#### random structure ####
-geometry units angstrom

@@ -1,0 +1,9 @@
+title "Simulated Annealing"
+echo
+
+start u3o8
+
+charge 0
+
+#### structure from generateCluster ####
+geometry

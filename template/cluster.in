@@ -1,11 +1,11 @@
 10
-generateRandom false
-generateOffspring true
+generateRandom true
+generateOffspring false
 numberOfOffspringPerClusterPair 5
-numberOfClusters 5
+numberOfClusters 10
 numberOfAtomTypes 2
 numberOfEachAtomType 3
-numberOfEachAtomType 6
+numberOfEachAtomType 8
 atomTypes U
 atomTypes O
-minBond 1.0
+minBond 1.5
