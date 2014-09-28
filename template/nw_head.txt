@@ -1,4 +1,4 @@
-title "Simulated Annealing"
+title "DFT Optimization"
 echo
 
 start u3o8

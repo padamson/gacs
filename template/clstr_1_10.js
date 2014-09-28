@@ -1,6 +1,6 @@
 #!/bin/csh
 #gen_pbs version: 1.0.3
-#PBS -A           WPTAFITO11533311
+#PBS -A           account
 #PBS -N           J_u3o8_1_10
 #PBS -joe
 #PBS -e           u3o8_1_10.oe
@@ -17,7 +17,7 @@ set SCR = $WORK_DIR
 
 cd $SCR
 
-cp /work1/home/padamson/Research/u3o8/clstr_1_10.csh $SCR/.
+cp /home/padamson/Research/u3o8/clstr_1_10.csh $SCR/.
 
 echo "Job $PBS_JOBID "clstr_1_10" started on `date` running on `hostname`">clstr_1_10.log
 
@@ -25,6 +25,6 @@ $EXEC
 
 echo "Job ended on `date`">>clstr_1_10.log
 
-cp cluster_*.out /work1/home/padamson/Research/u3o8/.
-cp clstr_1_10.log /work1/home/padamson/Research/u3o8/.
+cp cluster_*.out /home/padamson/Research/u3o8/.
+cp clstr_1_10.log /home/padamson/Research/u3o8/.
 
