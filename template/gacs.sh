@@ -5,6 +5,7 @@ no=$2
 charge=$3
 mult=$4
 nnodes=$5
+wall=$6
 wrkdir=u${1}o${2}${charge}
 mkdir /home/padamson/Research/$wrkdir
 cd /home/padamson/Research/$wrkdir
@@ -20,7 +21,7 @@ if [[ "$mach" == 'sp' ]]; then
   sed "s/u3o8/$wrkdir/g" /home/padamson/gacs-uranium/template/clstr_1_10.js > clstr_1_10.js.$$
   sed "s/account/$account/g" clstr_1_10.js.$$ > clstr_1_10.js
   sed "s/select=1/select=$nnodes/g" clstr_1_10.js > clstr_1_10.js.$$
-  cp clstr_1_10.js.$$ clstr_1_10.js
+  sed "s/walltime=12/walltime=$wall/g" clstr_1_10.js.$$ > clstr_1_10.js
   rm clstr_1_10.js.$$
 elif [[ "$mach" == 'li' ]]; then
   ncpu=$(expr $nnodes * 24)
@@ -34,7 +35,7 @@ elif [[ "$mach" == 'li' ]]; then
   sed "s/ncpus=16/ncpus=24/g" clstr_1_10.js > clstr_1_10.js.$$
   sed "s/mpiprocs=16/mpiprocs=24/g" clstr_1_10.js.$$ > clstr_1_10.js
   sed "s/select=1/select=$nnodes/g" clstr_1_10.js > clstr_1_10.js.$$
-  cp clstr_1_10.js.$$ clstr_1_10.js
+  sed "s/walltime=12/walltime=$wall/g" clstr_1_10.js.$$ > clstr_1_10.js
   rm clstr_1_10.js.$$
 fi
 chmod u+x clstr_1_10.csh

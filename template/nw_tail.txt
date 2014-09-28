@@ -1,5 +1,22 @@
 end
 
+pspw 
+ mult 1
+ #odft
+ simulation_cell units angstroms 
+ boundary_conditions aperiodic 
+  SC 10.0 ngrid 40 40 40 
+  end 
+ xc pbe96
+end
+
+driver
+  MAXITER 50
+end
+
+set nwpw:minimizer 2
+task pspw optimize
+
 dft
   mult 1
   #odft
