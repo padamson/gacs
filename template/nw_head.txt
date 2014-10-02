@@ -1,6 +1,8 @@
 title "DFT Optimization"
 echo
 
+memory 30 gb
+
 start u3o8
 
 charge 0

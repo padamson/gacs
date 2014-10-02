@@ -3,7 +3,7 @@
 #PBS -A account
 #PBS -q standard
 #PBS -l walltime=12:00:00
-#PBS -l select=1:ncpus=16:mpiprocs=16
+#PBS -l select=1:ncpus=32:mpiprocs=16
 #PBS -N J_u3o8_anneal
 #PBS -joe
 #PBS -e u3o8_anneal.oe
@@ -11,21 +11,27 @@
 #PBS -M padamson
 #PBS -mbe
 
-set EXEC = ./clstr_anneal.csh
+set EXEC = 'aprun -n 16 /usr/local/usp/nwchem/6.3-pgi/bin/nwchem'
 
 # create a job-specific subdirectory based on JOBID and cd to it
 JOBID=`echo ${PBS_JOBID} | cut -d '.' -f 1`
 set SCR = ${WORKDIR}/${JOBID}
 cd $SCR
 
-cp $HOME/anneal/u3o8/clstr_anneal.csh $SCR/.
-
 echo "Job $PBS_JOBID "clstr_anneal" started on `date` running on `hostname`">clstr_anneal.log
 
-$EXEC
+set i = 1
+while ($i <= 10)
+  cp $HOME/anneal/u3o8/cluster_$i.nw $SCR/.
+
+  $EXEC cluster_$i.nw > cluster_$i.out
+
+  cp cluster_$i.out $HOME/anneal/u3o8/.
+
+  @ i++
+end
 
 echo "Job ended on `date`">>clstr_anneal.log
 
-cp cluster_*.out $HOME/anneal/u3o8/.
 cp clstr_anneal.log $HOME/anneal/u3o8/.
 

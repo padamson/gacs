@@ -1,9 +1,9 @@
 #!/bin/csh -x
 
 set EXEC=/apps/nwchem/scripts/nwchem_run6.3
-set SCR = $WORK_DIR
+set SCR = `pwd`
 
-cd $SCR
+#cd $SCR
 
 set i = 1
 while ($i <= 10)
