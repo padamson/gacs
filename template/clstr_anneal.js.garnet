@@ -8,14 +8,21 @@
 #PBS -joe
 #PBS -e u3o8_anneal.oe
 #PBS -o u3o8_anneal.oe
-#PBS -M padamson
+#PBS -M paul.adamson.01@gmail.com
 #PBS -mbe
 
 set EXEC = 'aprun -n 16 /usr/local/usp/nwchem/6.3-pgi/bin/nwchem'
 
+export HUGETLB_MORECORE=yes
+export HUGETLB_ELFMAP=W
+export HUGETLB_FORCE_ELFMAP=yes+
+export MPI_DSM_DISTRIBUTE=yes
+export APRUN_BALANCED_INJECTION=64
+
 # create a job-specific subdirectory based on JOBID and cd to it
-JOBID=`echo ${PBS_JOBID} | cut -d '.' -f 1`
+set JOBID = `echo ${PBS_JOBID} | cut -d '.' -f 1`
 set SCR = ${WORKDIR}/${JOBID}
+mkdir $SCR
 cd $SCR
 
 echo "Job $PBS_JOBID "clstr_anneal" started on `date` running on `hostname`">clstr_anneal.log
