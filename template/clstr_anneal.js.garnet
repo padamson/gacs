@@ -11,12 +11,13 @@
 #PBS -M paul.adamson.01@gmail.com
 #PBS -mbe
 
-set EXEC = 'aprun -n 16 /usr/local/usp/nwchem/6.3-pgi/bin/nwchem'
+#set EXEC = 'aprun -n 16 /usr/local/usp/nwchem/6.3-pgi/bin/nwchem'
+set EXEC = 'aprun -n 16 /usr/local/usp/nwchem/6.1.1/bin/nwchem'
 
 export HUGETLB_MORECORE=yes
 export HUGETLB_ELFMAP=W
 export HUGETLB_FORCE_ELFMAP=yes+
-export MPI_DSM_DISTRIBUTE=yes
+#export MPI_DSM_DISTRIBUTE=yes
 export APRUN_BALANCED_INJECTION=64
 
 # create a job-specific subdirectory based on JOBID and cd to it

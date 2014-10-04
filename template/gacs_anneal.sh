@@ -1,5 +1,5 @@
 #!/bin/bash
-if (( $# != 6 )); then
+if (( $# != 7 )); then
   echo "Illegal number of parameters (expecting 6)"
   echo "==================================================="
   echo "nu) number of Uranium atoms (integer)"
@@ -8,6 +8,7 @@ if (( $# != 6 )); then
   echo "mult) multiplicity of molecule (1 or 2)"
   echo "nnodes) number of nodes (integer)"
   echo "wall) walltime requested in hours (e.g. 12, 24, 36)"
+  echo "numberOfClusters) number of clusters"
   exit 1
 fi
 nu=$1
@@ -16,6 +17,7 @@ charge=$3
 mult=$4
 nnodes=$5
 wall=$6
+numberOfClusters=$7
 wrkdir=u${1}o${2}${charge}
 mkdir $HOME/anneal/$wrkdir
 cd $HOME/anneal/$wrkdir
@@ -80,15 +82,17 @@ mv nw_tail_anneal.txt.$$ nw_tail_anneal.txt
 
 sed "s/numberOfEachAtomType 3/numberOfEachAtomType $nu/g" $HOME/gacs-uranium/template/cluster.in > cluster.in.$$
 sed "s/numberOfEachAtomType 8/numberOfEachAtomType $no/g" cluster.in.$$ > cluster.in
-rm cluster.in.$$
+sed "s/numberOfClusters 10/numberOfClusters $numberOfClusters/g" cluster.in > cluster.in.$$
+mv cluster.in.$$ cluster.in
 
 generateCluster -i cluster.in
 
-for i in {1..10}
+for i in $(eval echo "{1..$numberOfClusters}")
 do
   tail -n +3 cluster_$i.xyz > cluster_$i.$$
   cat nw_head.txt cluster_$i.$$ nw_tail_anneal.txt > cluster_$i.nw
   rm cluster_$i.xyz cluster_$i.$$
 done
+rm nw_head.txt nw_tail_anneal.txt
 
 #qsub clstr_anneal.js
