@@ -56,14 +56,16 @@ elif [[ "$mach" == 'li' ]]; then
   rm clstr_anneal.js.$$
 elif [[ "$mach" == 'ga' ]]; then
   nproc=$(expr $nnodes * 16)
-  mem=$(expr $nnodes * 60)
+  mem=2
   account=AFITO11533311
   sed "s/u3o8/$wrkdir/g" $HOME/gacs-uranium/template/clstr_anneal.js.garnet > clstr_anneal.js.$$
   sed "s/account/$account/g" clstr_anneal.js.$$ > clstr_anneal.js
   sed "s/select=1/select=$nnodes/g" clstr_anneal.js > clstr_anneal.js.$$
   sed "s/walltime=12/walltime=$wall/g" clstr_anneal.js.$$ > clstr_anneal.js
   sed "s/aprun -n 16/aprun -n $nproc/g" clstr_anneal.js > clstr_anneal.js.$$
-  mv clstr_anneal.js.$$ clstr_anneal.js
+  sed "s/i <= 10/i <= $numberOfClusters/g" clstr_anneal.js.$$ > clstr_anneal.js
+  #mv clstr_anneal.js.$$ clstr_anneal.js
+  rm clstr_anneal.js.$$ 
 fi
 
 sed "s/u3o8/$wrkdir/g" $HOME/gacs-uranium/template/nw_head.txt > nw_head.txt.$$
@@ -87,6 +89,8 @@ mv cluster.in.$$ cluster.in
 
 generateCluster -i cluster.in
 
+rm cluster.in
+
 for i in $(eval echo "{1..$numberOfClusters}")
 do
   tail -n +3 cluster_$i.xyz > cluster_$i.$$
@@ -95,4 +99,4 @@ do
 done
 rm nw_head.txt nw_tail_anneal.txt
 
-#qsub clstr_anneal.js
+qsub clstr_anneal.js
