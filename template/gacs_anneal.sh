@@ -63,15 +63,15 @@ elif [[ "$mach" == 'ga' ]]; then
   sed "s/select=1/select=$nnodes/g" clstr_anneal.js > clstr_anneal.js.$$
   sed "s/walltime=12/walltime=$wall/g" clstr_anneal.js.$$ > clstr_anneal.js
   sed "s/aprun -n 16/aprun -n $nproc/g" clstr_anneal.js > clstr_anneal.js.$$
-  sed "s/i <= 10/i <= $numberOfClusters/g" clstr_anneal.js.$$ > clstr_anneal.js
+  #sed "s/i <= 10/i <= $numberOfClusters/g" clstr_anneal.js.$$ > clstr_anneal.js
   #mv clstr_anneal.js.$$ clstr_anneal.js
-  rm clstr_anneal.js.$$ 
+  rm clstr_anneal.js
 fi
 
 sed "s/u3o8/$wrkdir/g" $HOME/gacs-uranium/template/nw_head.txt > nw_head.txt.$$
 sed "s/charge 0/charge $charge/g" nw_head.txt.$$ > nw_head.txt
 sed "s/memory 30/memory $mem/g" nw_head.txt > nw_head.txt.$$
-mv nw_head.txt.$$ nw_head.txt
+#mv nw_head.txt.$$ nw_head.txt
 
 if [[ "$mult" == '2' ]]; then
   sed "s/mult 1/mult 2/g" $HOME/gacs-uranium/template/nw_tail_anneal.txt > nw_tail_anneal.txt.$$
@@ -93,10 +93,13 @@ rm cluster.in
 
 for i in $(eval echo "{1..$numberOfClusters}")
 do
+  sed "s/clstr/$i/g" clstr_anneal.js.$$ > cluster_$i.js
+  sed "s/clstr/$i/g" nw_head.txt.$$ > nw_head.txt.$i
   tail -n +3 cluster_$i.xyz > cluster_$i.$$
-  cat nw_head.txt cluster_$i.$$ nw_tail_anneal.txt > cluster_$i.nw
-  rm cluster_$i.xyz cluster_$i.$$
+  cat nw_head.txt.$i cluster_$i.$$ nw_tail_anneal.txt > cluster_$i.nw
+  rm cluster_$i.xyz  nw_head.txt.$i
+  qsub cluster_$i.js
 done
 rm nw_head.txt nw_tail_anneal.txt
+rm *.$$
 
-qsub clstr_anneal.js

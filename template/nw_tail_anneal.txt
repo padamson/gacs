@@ -54,7 +54,7 @@ ecp
   U library crenbl_ecp
 end
 
-driver
+stepper
   MAXITER 50
 end
 

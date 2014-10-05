@@ -1,4 +1,4 @@
-title "DFT Optimization"
+title "u3o8_clstr DFT Optimization"
 echo
 
 memory 30 gb

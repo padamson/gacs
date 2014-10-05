@@ -4,10 +4,10 @@
 #PBS -q standard
 #PBS -l walltime=12:00:00
 #PBS -l select=1:ncpus=32:mpiprocs=16
-#PBS -N J_u3o8_anneal
+#PBS -N J_u3o8_clstr
 #PBS -joe
-#PBS -e u3o8_anneal.oe
-#PBS -o u3o8_anneal.oe
+#PBS -e u3o8_clstr.oe
+#PBS -o u3o8_clstr.oe
 #PBS -M paul.adamson.01@gmail.com
 #PBS -mbe
 
@@ -26,20 +26,20 @@ set SCR = ${WORKDIR}/${JOBID}
 mkdir $SCR
 cd $SCR
 
-echo "Job $PBS_JOBID "clstr_anneal" started on `date` running on `hostname`">clstr_anneal.log
+echo "Job $PBS_JOBID "u3o8_clstr" started on `date` running on `hostname`">cluster_clstr.log
 
-set i = 1
-while ($i <= 10)
-  cp $HOME/anneal/u3o8/cluster_$i.nw $SCR/.
+#set i = 1
+#while ($i <= 10)
+  cp $HOME/anneal/u3o8/cluster_clstr.nw $SCR/.
 
-  $EXEC cluster_$i.nw > cluster_$i.out
+  $EXEC cluster_clstr.nw > cluster_clstr.out
 
-  cp cluster_$i.out $HOME/anneal/u3o8/.
+  cp cluster_clstr.out $HOME/anneal/u3o8/.
 
-  @ i++
-end
+  #@ i++
+#end
 
-echo "Job ended on `date`">>clstr_anneal.log
+echo "Job ended on `date`">>cluster_clstr.log
 
-cp clstr_anneal.log $HOME/anneal/u3o8/.
+cp cluster_clstr.log $HOME/anneal/u3o8/.
 
