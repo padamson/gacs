@@ -21,22 +21,27 @@ Install Chapel
 The genetic algorithm code (GenerateCluster.chpl) is writtin in [Chapel](http://chapel.cray.com/). Chapel compiles easily
 on both Spirit and Garnet using the supplied quick start instructions.
 
+Clone `gacs-uranium`
+--------------------
+
+`git clone git@github.com:padamson/gacs-uranium.git`
+
 Compile and "install" `generateCluster.chpl`
 --------------------------------------------
 
-1. The scripts in the `template` directory expect to find the `generateCluster` executable in the `~/Research/bin/` directory, so
+'1'. The scripts in the `template` directory expect to find the `generateCluster` executable in the `~/Research/bin/` directory, so
 create that directory if you do not have one already:
 
 > `mkdir -p ~/Research/bin`
 
-2. Add the directory to your path by adding the following to your `~/.personal.bash_profile`:
+'2'. Add the directory to your path by adding the following to your `~/.personal.bash_profile`:
 
 > `export PATH=$PATH:~/Research/bin`
 
-2. Make sure you are in the root `gacs-uranium` directory, such as:
+'3'. Make sure you are in the root `gacs-uranium` directory, such as:
 
 > `cd ~/gacs-uranium`
 
-3. Compile the generateCluster executable:
+'4'. Compile the generateCluster executable:
 
 > `make`
