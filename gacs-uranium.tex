@@ -1,0 +1,139 @@
+\documentclass[10pt,twoside,titlepage]{seamless}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{times}
+%\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage[nottoc]{tocbibind}
+\usepackage{multirow}
+\usepackage{wrapfig,booktabs}
+\usepackage{subcaption}
+%\usepackage{cleveref}
+%\input{chapel_testing}
+\usepackage{seamless}
+\input{chapel_listing}
+
+%% High section numbers require different number widths
+\usepackage[titles]{tocloft}
+\setlength{\cftchapnumwidth}{1.3em} % Wide enough for a chapter number.
+\setlength{\cftsecnumwidth}{3.2em}  % Same as cftsubsecnumwidth:
+\setlength{\cftsubsecnumwidth}{3.2em} % Wide enough for three digits and two dots.
+%\setlength{\cftsubsubsecnumwidth}{5.4em}
+\setlength{\cftsecindent}{1.3em}    % cftchapnumwidth
+\setlength{\cftsubsecindent}{1.3em} % cftchapnumwidth
+\setlength{\cftsubsubsecindent}{4.5em} % cftchapnumwidth + cftsecnumwidth
+
+%\usepackage{ifpdf}
+%\ifpdf
+%\usepackage[pdftex,
+            %bookmarks,
+            %plainpages=false,
+            %breaklinks,
+            %pdftitle={Test-Driven Development with seamless},
+            %pdfauthor={Paul Adamson},
+            %pdfsubject={seamless package, literate programming, test-driven development}
+           %]{hyperref}
+%\else
+%\usepackage[ps2pdf]{hyperref}
+%\fi
+
+% some custom latex convenience commands
+\usepackage{xspace}
+\newcommand*{\eg}{\emph{e.g.}\@\xspace}
+\newcommand*{\ie}{\emph{i.e.}\@\xspace}
+\newcommand*{\seamless}{\lstinline{seamless}\@\xspace}
+\newcommand*{\latex}{\LaTeX\@\xspace}
+
+\makeatletter
+\newcommand*{\etc}{%
+  \@ifnextchar{.}%
+  {etc}%
+  {etc.\@\xspace}%
+}
+\makeatother
+
+\newcommand{\rsec}[1]
+           {\S\ref{#1}}
+
+% courtesy: http://www.iam.ubc.ca/~newbury/tex/page-set-up.html
+\newcommand{\sekshun}[1]
+           {
+             \chapter{#1}
+             \markboth{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}{#1}
+           }
+
+\oddsidemargin 0.0in
+\evensidemargin 0.5in
+\textwidth 6in
+\headheight 0.2in
+\topmargin 0in
+\headsep 0.3in
+\textheight 8.5in
+
+\makeindex
+\title{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}
+
+\author{Paul Adamson\\
+\\
+}
+
+\date{January 23, 2015}
+
+\setcounter{tocdepth}{3}
+
+\begin{document}
+
+\pagestyle{empty}
+%\pagenumbering{alph}
+
+\ifpdf
+\pdfbookmark[1]{Title}{titlepage}
+\fi
+\maketitle
+
+\null\vfill
+\noindent
+\begin{center}
+\copyright Paul Adamson
+\end{center}
+
+\cleardoublepage
+\include{tm}
+\cleardoublepage
+
+\pagestyle{myheadings}
+\markboth{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}
+%\pagenumbering{roman}
+
+\ifpdf
+\pdfbookmark[1]{Table of Contents}{tablecontents}
+\fi
+\tableofcontents
+
+\cleardoublepage
+
+\pagestyle{myheadings}
+%\pagenumbering{arabic}
+
+\setlength{\parindent}{0in}
+\setlength{\parskip}{4mm plus2mm minus1mm}
+
+\input{Notation}
+\cleardoublepage
+\input{Organization}
+\cleardoublepage
+\input{Requirements}
+\cleardoublepage
+\appendix
+\input{Requirement_Traceability}
+\cleardoublepage
+\markboth{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}{Index}
+\input{gacs-uranium.ind}
+
+\bibliographystyle{plain}       
+\bibliography{references} 
+
+\end{document}

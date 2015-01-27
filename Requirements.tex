@@ -1,0 +1,51 @@
+\sekshun{Requirements}
+\label{Requirements}
+\index{requirements}
+
+\section{Scope}
+\label{Scope}
+\index{scope}
+
+The scope of this application is the search for optimized geometries of clusters and nanoparticles using
+genetic algorithms to drive quantum chemistry calculations. The basic approach follows Johnston.\cite{johnston}
+
+\section{Functional Requirements}
+\label{Functional_Requirements}
+\index{functional requirements}
+\index{requirements!functional}
+
+The code shall do the following:
+
+\begin{description}
+  \item[\req{1}] generate an initial generation of clusters by choosing the $x$, $y$, and $z$ coordinates
+    randomly and relaxing them to local minima using the quasi-Newton L-BFGS minimisation routine
+  \item for a generation, record the lowest and highest values of the potential energy; compute the fitness 
+    using dynamic fitness scaling with
+    \begin{description}
+      \item[\req{2.1}] an exponential fitness function
+      \item[\req{2.2}] a linear fitness function
+      \item[\req{2.3}] a hyperbolic tangent fitness function
+    \end{description}
+  \item from a generation with assigned fitness values, select parents for crossover using
+    \begin{description}
+      \item[\req{3.1}] roulette wheel selection
+      \item[\req{3.2}] tournament selection
+    \end{description}
+  \item[\req{4}] carry out crossover for a given set of parents, generating a predetermined number of offspring, 
+    using a variant of the cut and splice crossover operator of Deaven and Ho followed by relaxation to a local
+    minimum using the quasi-Newton L-BFGS routing
+  \item for a set of offspring, apply a mutation with a predetermined probability, and relax any ``mutant'' clusters
+    using the L-BFGS minimisation routine; the applied mutation scheme is
+    \begin{description}
+      \item[\req{5.1}] atom displacement
+      \item[\req{5.2}] twisting
+      \item[\req{5.3}] cluster replacement
+      \item[\req{5.4}] atom permutation
+    \end{description}
+  \item[\req{6}] maintain diversity in the offspring population by removing the higher energy offspring of any pair with
+    difference in energy of less than some predetermined value
+  \item[\req{7}] select a next generation of predetermined size from the lowest energy (highest fitness) 
+    clusters selected from the set containing the previous generation, the new offspring, and the new mutants
+  \item[\req{8}] repeat crossover, mutation, and selection for a specified number of generations or until convergence
+    (range of cluster energies in the population has not changed for a prescribed number of generations)
+\end{description}

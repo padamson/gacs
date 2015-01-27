@@ -1,0 +1,70 @@
+\sekshun{Notation}
+\label{Notation}
+\index{notation}
+
+\section{Code Chunks}
+
+Three types of code chunks that make up the software package are 
+presented in this specification and delineated
+with the appropriate keyword in italics: 
+\textit{Source, Helper, or Test}.  The filename containing the code
+chunk is given in parenthesis following the keyword. A brief description 
+of the code chunk is also listed.
+The actual code is represented with a fixed-width font where keywords are
+bold and comments are italicized. An example helper code chunk is listed
+below.
+
+\textit{Helper (testFunctions.chpl)}. Provide the functions used
+in the tests.
+\begin{chapel}
+  proc f1(x:real):real {
+    return x**3;
+  } 
+  proc f2(x:real):real {
+    return 1/x;
+  } 
+  proc f3(x:real):real {
+    return x;
+  } 
+\end{chapel}
+
+\section{Examples}
+
+Examples of how to use the software are also provided and delineated with the
+keyword \textit{Example} followed by a description of the use case. Here is
+an example of an \textit{Example}:
+
+\textit{Example}. The following line of code calls the function
+\chpl{leftRectangleIntegration} to perform the integral of the function \chpl{f1}
+over the interval $[1.0,4.0]$ using the left rectangle method with 100 subdivisions
+and stores the result in the variable \chpl{result}.
+\begin{chapel}
+  var result: real = leftRectangleIntegration(a = 1.0, b = 4.0, N = 100, f = f1);
+\end{chapel}
+
+\section{Text Boxes}
+Different color text boxes are used to highlight \textit{TODO's, Notes,
+Rationales, Open Issues,} and \textit{Futures} throughout the specification.
+Examples of these text boxes along with definitions for each of these terms
+is given below:
+
+\begin{TODO}
+  Things that need to be done for this version of the software.
+\end{TODO}
+
+\begin{note}
+  Something of note that does not fit into any other category.
+\end{note}
+
+\begin{rationale}
+  An explanation for a particular design choice.
+\end{rationale}
+
+\begin{openissue}
+  Issue that we do not know how to handle.
+\end{openissue}
+
+\begin{future}
+  Issue or feature that we have a story about, but which is not yet
+  fully-designed or implemented. 
+\end{future}

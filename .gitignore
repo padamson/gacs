@@ -1,0 +1,18 @@
+# latex ignores.
+/*.bbl
+/*.blg
+/*.aux
+/*.ind
+/*.idx
+/*.ilg
+/*.log
+/*.out
+/*.toc
+/*.dvi
+/*.ps
+/*.pdf
+/_chapter_temp.tex
+/fig/*converted-to.pdf
+
+/bin/
+
