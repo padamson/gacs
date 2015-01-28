@@ -1,0 +1,14 @@
+%flowcharts using tikz (https://www.sharelatex.com/blog/2013/08/29/tikz-series-pt3.html)
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, calc}
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, text width=3cm, draw=black, fill=red!30]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, 
+minimum width=1.5cm, inner xsep=0pt, minimum height=1cm, text centered, text width=1.5cm, draw=black, fill=blue!30]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, text width=3cm, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=2cm, minimum height=1cm, text centered, text width=2cm, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\newenvironment{flowchart}{
+  \begin{tikzpicture}[node distance=2cm]
+    }{
+  \end{tikzpicture}
+}

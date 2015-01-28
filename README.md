@@ -1,4 +1,4 @@
-gacs-uranium
+gacs
 ============
 
 This project utilizes density functional theory (DFT) calculations guided by genetic algorithm (GA) methods 
@@ -37,10 +37,10 @@ Chapel compiles easily on both Spirit and Garnet using the supplied quick start 
 
 You will also want to add `source ~/chapel/util/quickstart/setchplenv.bash` to your `~/.personal.bash_profile`.
 
-Clone `gacs-uranium`
+Clone `gacs`
 --------------------
 
-`git clone git@github.com:padamson/gacs-uranium.git`
+`git clone git@github.com:padamson/gacs.git`
 
 Compile and "install" `generateCluster.chpl`
 --------------------------------------------
@@ -50,7 +50,7 @@ create that directory if you do not have one already:
   > `mkdir -p ~/Research/bin`
 2. Add the directory to your path by adding the following to your `~/.personal.bash_profile`:
   > `export PATH=$PATH:~/Research/bin`
-3. Make sure you are in the root `gacs-uranium` directory, such as:
-  > `cd ~/gacs-uranium`
+3. Make sure you are in the root `gacs` directory, such as:
+  > `cd ~/gacs`
 4. Compile the generateCluster executable:
   > `make`

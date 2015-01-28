@@ -1,7 +1,7 @@
 # configure the next two lines
-SPEC=gacs-uranium
+SPEC=gacs
 SEAMLESSHOME=~/research/seamless
-SPECHOME=~/research/gacs-uranium
+SPECHOME=~/research/gacs
 
 CHPL = chpl
 

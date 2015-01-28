@@ -14,6 +14,7 @@
 %\usepackage{cleveref}
 %\input{chapel_testing}
 \usepackage{seamless}
+\usepackage{flowchart}
 \input{chapel_listing}
 
 %% High section numbers require different number widths
@@ -62,7 +63,7 @@
 \newcommand{\sekshun}[1]
            {
              \chapter{#1}
-             \markboth{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}{#1}
+             \markboth{Genetic Algorithm Cluster Searching}{#1}
            }
 
 \oddsidemargin 0.0in
@@ -74,7 +75,7 @@
 \textheight 8.5in
 
 \makeindex
-\title{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}
+\title{Genetic Algorithm Cluster Searching}
 
 \author{Paul Adamson\\
 \\
@@ -105,7 +106,7 @@
 \cleardoublepage
 
 \pagestyle{myheadings}
-\markboth{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}
+\markboth{Genetic Algorithm Cluster Searching}{Genetic Algorithm Cluster Searching}
 %\pagenumbering{roman}
 
 \ifpdf
@@ -127,11 +128,12 @@
 \cleardoublepage
 \input{Requirements}
 \cleardoublepage
+\input{Specification}
 \appendix
 \input{Requirement_Traceability}
 \cleardoublepage
-\markboth{Genetic Algorithm Cluster Searching for Uranium-Containing Clusters}{Index}
-\input{gacs-uranium.ind}
+\markboth{Genetic Algorithm Cluster Searching}{Index}
+\input{gacs.ind}
 
 \bibliographystyle{plain}       
 \bibliography{references} 

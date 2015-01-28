@@ -1,0 +1,60 @@
+\sekshun{Specification}
+\label{Specification}
+\index{specification}
+
+\section{Overview of the Genetic Algorithm}
+\label{Genetic_Algorithm_Overview}
+\index{genetic algorithm}
+\index{genetic algorithm!specification}
+
+A flowchart representing the operation of the genetic algorithm used in the program is shown in 
+Figure~\ref{fig:flowchart}. The algorithm follows Johnston.\cite{johnston} Specific features are described below.
+
+\begin{figure}
+\begin{flowchart}
+\node (start) [startstop] {Start};
+\node (generate_initial_population) [process, right of=start, xshift=2cm] {Generate Initial Population};
+\draw [arrow] (start) -- (generate_initial_population);
+\node (relaxation) [process, right of=generate_initial_population, xshift=2cm] {Relaxation};
+\draw [arrow] (generate_initial_population) -- (relaxation);
+\node (select_parents_for_crossover) [process, below of=relaxation] {Select Parents for Crossover};
+\node (assign_fitness) [process, right of=select_parents_for_crossover, xshift=2cm] {Assign Fitness};
+\draw [arrow] (relaxation) -| (assign_fitness);
+\draw [arrow] (assign_fitness) -- (select_parents_for_crossover);
+\node (crossover) [process, below of=select_parents_for_crossover] {Crossover};
+\draw [arrow] (select_parents_for_crossover) -- (crossover);
+\node (mutation) [process, below of=crossover] {Mutation};
+\draw [arrow] (crossover) -- (mutation);
+\node (remove_twins) [process, below of=mutation] {Remove Twins};
+\draw [arrow] (mutation) -- (remove_twins);
+\node (offspring) [io, left of=crossover, xshift=-2cm] {Offspring};
+\node (mutants) [io, left of=remove_twins, xshift=-2cm] {Mutants};
+\node (select_generation) [process, left of=mutants, xshift=-2cm] {Select Generation};
+\node (next_generation) [io, below of=mutants, yshift=-0.5cm] {Next Generation};
+\node (converged) [decision, right of=next_generation, xshift=2cm] {Converged?};
+\node (final_population) [io, below of=converged, yshift=-1cm] {Final Population};
+\node (stop) [startstop, left of=final_population, xshift=-2cm] {Stop};
+\node (previous_generation) [io, right of=final_population, xshift=2cm, yshift=-2cm] {Previous Generation};
+\draw [arrow] (crossover) -- (offspring);
+\draw [arrow] (offspring) -| (select_generation);
+\draw [arrow] (remove_twins) -- (mutants);
+\draw [arrow] (mutants) -- (select_generation);
+\draw [arrow] (select_generation) |- (next_generation);
+\draw [arrow] (next_generation) -- (converged);
+\draw [arrow] (converged) -| node[pos=0.1,anchor=north] {no} (assign_fitness);
+\draw [arrow] (converged) -- node[anchor=west] {yes} (final_population);
+\draw [arrow] (converged) -| (previous_generation);
+\draw [arrow] (previous_generation) -| ($(select_generation.west)-(0.5,0)$) -- (select_generation);
+\draw [arrow] (final_population) -- (stop);
+\end{flowchart}
+\caption{Genetic algorithm flowchart}
+\label{fig:flowchart}
+\end{figure}
+
+\subsection{Generate Initial Population}
+
+For a given cluster size (nuclearity $N$), an initial population of $N_{pop}$ clusters ($10<N_{pop}<30$) are generated
+randomly. The $x$, $y$, and $z$ coordinates are chosen randomly in the range $[0,N^{1/3}]$, ensuring that the cluster
+size scales linearly with $N$.
+
+
