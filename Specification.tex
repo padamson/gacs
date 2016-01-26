@@ -57,4 +57,62 @@ For a given cluster size (nuclearity $N$), an initial population of $N_{pop}$ cl
 randomly. The $x$, $y$, and $z$ coordinates are chosen randomly in the range $[0,N^{1/3}]$, ensuring that the cluster
 size scales linearly with $N$.
 
+\subsection{Write Cartesian Coordinates of a Random Cluster to File}
+
+  \begin{enumspec}
+  \item\spec{1} Test \chpl{randomClusterCartesianCoordinatesTest}: 
+    generates random cartesian coordinates for a cluster and writes
+    them to a file.\\
+    \begin{tabular}{r r p{6cm}} \toprule
+      \textbf{output} x 4  & \chpl{stdout: true}   & test passed \\ 
+                           & \chpl{stdout: false}  & test failed \\ \midrule
+      \textbf{modules loaded} & \multicolumn{2}{l}{\chpl{randomClusterCartesianCoordinates}} \\ \midrule
+      \textbf{requirements met} & \multicolumn{2}{l}{\meetsreq{1,1.1}} \\ \bottomrule
+  \end{tabular}
+  \end{enumspec}
+
+\begin{chapelexample}{randomClusterCartesianCoordinatesTest.chpl}
+  A test for \lstinline{randomClusterCartesianCoordinates}. 
+  \begin{chapelpre}
+  \end{chapelpre}
+  \begin{chapel}
+use randomClusterCartesianCoordinates;
+use Random;
+  
+//set seed
+var atoms:string = ["U", "U", "O", "O"];
+var numberOfClusters:int = 4; 
+var minBondArray: real; 
+var maxDiff: real = 0.0001;
+
+for clusterIndex in 1..numberOfClusters {
+  clusterFilename = "cluster_" + clusterIndex + ".xyz";
+  writeln("Writing cluster to file: ",clusterFilename);
+  var clusterFile = open(clusterFilename,iomode.cw);
+  var writer = clusterFile.writer();
+
+  randomClusterCartesianCoordinates(
+    atoms,
+    minBondArray,
+    clusterIndex,
+    writer);
+
+    //read each file back in
+
+    //compare file contents to expected
+  //writeln((abs(fileContents - expected) <= maxErr));
+
+  writer.flush(); 
+  writer.close();
+}
+\end{chapel}
+\begin{chapelpost}
+\end{chapelpost}
+\begin{chapeloutput}
+true
+true
+true
+true
+\end{chapeloutput}
+\end{chapelexample}
 

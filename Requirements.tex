@@ -17,9 +17,14 @@ genetic algorithms to drive quantum chemistry calculations. The basic approach f
 The code shall do the following:
 
 \begin{description}
-  \item[\req{1}] generate an initial generation of clusters by choosing the $x$, $y$, and $z$ coordinates
-    randomly and relaxing them to local minima using the quasi-Newton L-BFGS minimisation routine
-  \item for a generation, record the lowest and highest values of the potential energy; compute the fitness 
+  \item[\req{1}] generate an initial population of clusters in which the real-valued cartesian coordinates 
+    are the cluster atoms as the genes and
+    \begin{description}
+      \item[\req{1.1}] by choosing the $x$, $y$, and $z$ coordinates randomly in the range $[0,N^{1/3}]$ and 
+      \item[\req{1.2}] relaxing each cluster in the initial population to local minima using the 
+        quasi-Newton L-BFGS minimisation routine
+    \end{description}
+  \item[\req{2}] for a generation, record the lowest and highest values of the potential energy; compute the fitness 
     using dynamic fitness scaling with
     \begin{description}
       \item[\req{2.1}] an exponential fitness function
