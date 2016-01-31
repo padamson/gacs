@@ -97,7 +97,18 @@ for clusterIndex in 1..numberOfClusters {
     clusterIndex,
     writer);
 
+    writer.close();
+    clusterFile.close();
+
+  var clusterFile = open(clusterFilename,iomode.r);
+  var reader = clusterFile.reader();
+
+  var clusterIndexFromFile = reader.read(int);
+  var 
+
+
     //read each file back in
+
 
     //compare file contents to expected
   //writeln((abs(fileContents - expected) <= maxErr));
